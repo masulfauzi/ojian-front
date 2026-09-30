@@ -7,31 +7,30 @@ const errorsOf = (schema, value) => {
 }
 
 describe('loginSchema', () => {
-  it('menerima kredensial valid dan menormalisasi email', () => {
-    const result = loginSchema.parse({ email: '  Admin@Example.COM ', password: 'rahasia123' })
-    expect(result.email).toBe('admin@example.com')
+  it('menerima email tanpa kode sekolah', () => {
+    const result = loginSchema.parse({ login: ' admin@example.com ', password: 'rahasia123' })
+    expect(result).toEqual({ login: 'admin@example.com', password: 'rahasia123', schoolCode: '' })
   })
 
-  it('menolak field kosong dengan pesan Indonesia', () => {
-    const errors = errorsOf(loginSchema, { email: '', password: '' })
-    expect(errors.email).toContain('wajib diisi')
-    expect(errors.password).toContain('wajib diisi')
+  it('menerima username + kode sekolah dan menormalisasi kode', () => {
+    const result = loginSchema.parse({ login: '2024001', password: 'x', schoolCode: ' SMAN1-JKT ' })
+    expect(result.schoolCode).toBe('sman1-jkt')
   })
 
-  it('menolak field yang tidak dikirim (undefined)', () => {
-    const errors = errorsOf(loginSchema, {})
-    expect(errors.email).toEqual(['wajib diisi'])
+  it('login dan password wajib diisi', () => {
+    const errors = errorsOf(loginSchema, { login: '', password: '' })
+    expect(errors.login).toEqual(['wajib diisi'])
+    expect(errors.password).toEqual(['wajib diisi'])
   })
 
-  it('menolak format email tidak valid', () => {
-    expect(errorsOf(loginSchema, { email: 'bukan-email', password: 'x' }).email).toEqual([
-      'format email tidak valid',
-    ])
-  })
-
-  it('menolak password lebih dari 72 karakter', () => {
-    const errors = errorsOf(loginSchema, { email: 'a@b.co', password: 'a'.repeat(73) })
+  it('password maksimal 72 karakter, kode sekolah maksimal 30', () => {
+    const errors = errorsOf(loginSchema, {
+      login: 'budi',
+      password: 'a'.repeat(73),
+      schoolCode: 'a'.repeat(31),
+    })
     expect(errors.password).toEqual(['maksimal 72 karakter'])
+    expect(errors.schoolCode).toEqual(['maksimal 30 karakter'])
   })
 })
 
@@ -42,16 +41,7 @@ describe('changePasswordSchema', () => {
     expect(changePasswordSchema.safeParse(valid).success).toBe(true)
   })
 
-  it('password baru minimal 8 karakter', () => {
-    const errors = errorsOf(changePasswordSchema, {
-      ...valid,
-      newPassword: 'pendek',
-      confirmPassword: 'pendek',
-    })
-    expect(errors.newPassword).toEqual(['minimal 8 karakter'])
-  })
-
-  it('batas 72 karakter: 72 diterima, 73 ditolak', () => {
+  it('batas 8–72 karakter', () => {
     const p72 = 'a'.repeat(72)
     const p73 = 'a'.repeat(73)
     expect(
@@ -61,19 +51,22 @@ describe('changePasswordSchema', () => {
       errorsOf(changePasswordSchema, { ...valid, newPassword: p73, confirmPassword: p73 })
         .newPassword,
     ).toEqual(['maksimal 72 karakter'])
+    expect(
+      errorsOf(changePasswordSchema, { ...valid, newPassword: 'pendek', confirmPassword: 'pendek' })
+        .newPassword,
+    ).toEqual(['minimal 8 karakter'])
   })
 
-  it('konfirmasi harus sama dengan password baru', () => {
-    const errors = errorsOf(changePasswordSchema, { ...valid, confirmPassword: 'berbeda123' })
-    expect(errors.confirmPassword).toEqual(['konfirmasi password tidak cocok'])
-  })
-
-  it('password baru tidak boleh sama dengan password lama', () => {
-    const errors = errorsOf(changePasswordSchema, {
-      oldPassword: 'sama12345',
-      newPassword: 'sama12345',
-      confirmPassword: 'sama12345',
-    })
-    expect(errors.newPassword).toEqual(['tidak boleh sama dengan password lama'])
+  it('konfirmasi harus sama dan password baru berbeda dari lama', () => {
+    expect(
+      errorsOf(changePasswordSchema, { ...valid, confirmPassword: 'lain12345' }).confirmPassword,
+    ).toEqual(['konfirmasi password tidak cocok'])
+    expect(
+      errorsOf(changePasswordSchema, {
+        oldPassword: 'sama12345',
+        newPassword: 'sama12345',
+        confirmPassword: 'sama12345',
+      }).newPassword,
+    ).toEqual(['tidak boleh sama dengan password lama'])
   })
 })

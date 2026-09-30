@@ -12,11 +12,12 @@ const router = useRouter()
 function safeRedirect(value) {
   return typeof value === 'string' && value.startsWith('/') && !value.startsWith('//')
     ? value
-    : { name: 'dashboard' }
+    : auth.homeRoute()
 }
 
 async function handleLogin(credentials) {
   await auth.login(credentials)
+  // Guard akan mengalihkan ke /change-password bila password awal belum diganti.
   await router.replace(safeRedirect(route.query.redirect))
 }
 </script>

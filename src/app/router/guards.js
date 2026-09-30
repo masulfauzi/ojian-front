@@ -2,10 +2,13 @@ import { useAuthStore } from '@/modules/auth'
 
 const APP_NAME = import.meta.env.VITE_APP_NAME || 'Exam Web'
 
-/** Periksa apakah role user termasuk dalam `meta.roles` route (tanpa `roles` = semua role). */
-export function hasRoleAccess(route, role) {
-  const roles = route.meta?.roles
-  return !roles?.length || roles.includes(role)
+/**
+ * Apakah role aktif boleh membuka route. Route tanpa `meta.menuCode` (profil, 403, 404) terbuka
+ * untuk semua; route dengan `menuCode` memerlukan hak `meta.action` (default `view`) pada menu itu.
+ */
+export function canAccessRoute(route, auth) {
+  const code = route.meta?.menuCode
+  return !code || auth.can(code, route.meta.action ?? 'view')
 }
 
 export function installGuards(router) {
@@ -17,10 +20,14 @@ export function installGuards(router) {
     if (to.meta.requiresAuth && !auth.isAuthenticated) {
       return { name: 'login', query: { redirect: to.fullPath } }
     }
-    if (to.meta.guestOnly && auth.isAuthenticated) {
-      return { name: 'dashboard' }
+    // Akun dengan password awal dari admin wajib mengganti password lebih dulu.
+    if (auth.isAuthenticated && auth.mustChangePassword && !to.meta.allowWhenMustChange) {
+      return to.meta.guestOnly || to.meta.requiresAuth ? { name: 'change-password' } : true
     }
-    if (to.meta.requiresAuth && !hasRoleAccess(to, auth.role)) {
+    if (to.meta.guestOnly && auth.isAuthenticated) {
+      return auth.homeRoute()
+    }
+    if (to.meta.requiresAuth && !canAccessRoute(to, auth)) {
       return { name: 'forbidden', replace: true }
     }
     return true
