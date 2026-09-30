@@ -7,10 +7,11 @@ import {
   personNameField,
   z,
 } from '@/shared/schemas/common'
+import { loginIdentityIssues } from '../utils/roles'
 
 const baseFields = {
   name: personNameField(),
-  // NIS, NIP, atau nama login lain; unik per sekolah.
+  // Unik global: NISN untuk siswa, NIP atau nama login lain untuk guru.
   username: patternField(
     /^[A-Za-z0-9._-]{3,50}$/,
     'hanya huruf, angka, titik, garis bawah, dan tanda hubung (3–50 karakter)',
@@ -25,8 +26,12 @@ const baseFields = {
   defaultRoleId: optionalId(),
 }
 
-/** Role default (bila diisi) harus termasuk role yang dipilih. */
-function defaultRoleRule(values, ctx) {
+/**
+ * Aturan lintas field:
+ * - role default (bila diisi) harus termasuk role yang dipilih;
+ * - identitas login sesuai role (siswa NISN, admin wajib email) bila `roleCodesOf` diberikan.
+ */
+const crossFieldRules = (roleCodesOf) => (values, ctx) => {
   if (values.defaultRoleId && !values.roleIds.includes(values.defaultRoleId)) {
     ctx.addIssue({
       code: z.ZodIssueCode.custom,
@@ -34,12 +39,23 @@ function defaultRoleRule(values, ctx) {
       message: 'harus salah satu role yang dipilih',
     })
   }
+  if (!roleCodesOf) return
+  const issues = loginIdentityIssues({
+    roleCodes: roleCodesOf(values.roleIds),
+    username: values.username,
+    email: values.email,
+  })
+  for (const [field, message] of Object.entries(issues)) {
+    ctx.addIssue({ code: z.ZodIssueCode.custom, path: [field], message })
+  }
 }
 
-export const createUserSchema = z
-  .object({ ...baseFields, password: passwordField() })
-  .superRefine(defaultRoleRule)
+/**
+ * @param {object} [options]
+ * @param {(roleIds: string[]) => string[]} [options.roleCodesOf] Kode role dari id role yang dipilih.
+ */
+export const createUserSchema = ({ roleCodesOf } = {}) =>
+  z.object({ ...baseFields, password: passwordField() }).superRefine(crossFieldRules(roleCodesOf))
 
-export const updateUserSchema = z
-  .object({ ...baseFields, isActive: z.boolean() })
-  .superRefine(defaultRoleRule)
+export const updateUserSchema = ({ roleCodesOf } = {}) =>
+  z.object({ ...baseFields, isActive: z.boolean() }).superRefine(crossFieldRules(roleCodesOf))

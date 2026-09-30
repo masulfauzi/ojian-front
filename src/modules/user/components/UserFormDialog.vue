@@ -17,7 +17,7 @@ import { PASSWORD_MAX, PASSWORD_MIN } from '@/shared/schemas/common'
 import { listRoleOptions } from '@/modules/role'
 import { SchoolSelect } from '@/modules/school'
 import { createUserSchema, updateUserSchema } from '../schemas/user.schema'
-import { assignableRoles, keepAvailable } from '../utils/roles'
+import { assignableRoles, hasAdminRole, hasStudentRole, keepAvailable } from '../utils/roles'
 
 const visible = defineModel('visible', { type: Boolean, default: false })
 
@@ -34,10 +34,16 @@ const props = defineProps({
 
 const isEdit = computed(() => Boolean(props.user))
 
+// Opsi role (bergantung pada sekolah); kodenya dipakai aturan identitas login di skema.
+const roleOptions = ref([])
+const roleCodesOf = (ids = []) =>
+  roleOptions.value.filter((role) => ids.includes(role.id)).map((role) => role.code)
+
 const form = useForm({
-  validationSchema: computed(() =>
-    toTypedSchema(isEdit.value ? updateUserSchema : createUserSchema),
-  ),
+  validationSchema: computed(() => {
+    const factory = isEdit.value ? updateUserSchema : createUserSchema
+    return toTypedSchema(factory({ roleCodesOf }))
+  }),
 })
 // 409: username atau email sudah dipakai (dibedakan dari pesan backend).
 const applyServerErrors = useServerErrors(form, {
@@ -49,7 +55,6 @@ const schoolFieldId = useId()
 const school = useField('schoolId')
 
 // ---- Opsi role, bergantung pada sekolah ----
-const roleOptions = ref([])
 const rolesLoading = ref(false)
 let rolesSeq = 0
 
@@ -73,6 +78,15 @@ async function loadRoles(schoolId) {
 watch(
   () => form.values.schoolId,
   (schoolId) => visible.value && loadRoles(schoolId ?? null),
+)
+
+// Siswa login dengan NISN, admin login dengan email.
+const selectedCodes = computed(() => roleCodesOf(form.values.roleIds ?? []))
+const needsEmail = computed(() => hasAdminRole(selectedCodes.value))
+const usernameHint = computed(() =>
+  hasStudentRole(selectedCodes.value)
+    ? 'Siswa wajib memakai NISN 10 digit sebagai username.'
+    : 'Unik di seluruh platform. Siswa wajib NISN 10 digit; guru boleh NIP atau nama login.',
 )
 
 // Role default dipilih dari role yang dicentang.
@@ -144,8 +158,8 @@ const onSubmit = form.handleSubmit(async (values) => {
       <FormInputText
         name="username"
         label="Username"
-        placeholder="NIS, NIP, atau nama login"
-        hint="Unik per sekolah. Dipakai login bersama kode sekolah."
+        placeholder="NISN, NIP, atau nama login"
+        :hint="usernameHint"
         autocomplete="off"
         required
       />
@@ -153,7 +167,8 @@ const onSubmit = form.handleSubmit(async (values) => {
         name="email"
         label="Email"
         type="email"
-        hint="Opsional. Bisa dipakai untuk login tanpa kode sekolah."
+        :hint="needsEmail ? 'Wajib untuk admin — admin login dengan email.' : 'Opsional.'"
+        :required="needsEmail"
         autocomplete="off"
       />
       <FormInputText name="phone" label="Telepon" />
