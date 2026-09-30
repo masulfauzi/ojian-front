@@ -7,11 +7,14 @@ export class ApiError extends Error {
    * @param {number} params.status  HTTP status, 0 bila tidak ada response (jaringan/timeout).
    * @param {string} params.message Pesan yang layak ditampilkan ke pengguna.
    * @param {Record<string, string>} [params.fieldErrors] Pesan error per field.
+   * @param {string|null} [params.code] Kode error khusus backend.
    */
-  constructor({ status, message, fieldErrors = {}, cause } = {}) {
+  constructor({ status, message, fieldErrors = {}, code = null, cause } = {}) {
     super(message, { cause })
     this.name = 'ApiError'
     this.status = status ?? 0
+    // Kode khusus dari backend (mis. ROLE_NOT_ACTIVE), null bila tidak ada.
+    this.code = code
     this.fieldErrors = fieldErrors
   }
 
@@ -61,6 +64,7 @@ export function normalizeError(error) {
     status,
     message: typeof data?.message === 'string' && data.message ? data.message : fallback,
     fieldErrors: toFieldErrors(data?.errors),
+    code: typeof data?.code === 'string' && data.code ? data.code : null,
     cause: error,
   })
 }

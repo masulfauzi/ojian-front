@@ -57,4 +57,42 @@ export const existingPasswordField = () => z.string().min(1).max(PASSWORD_MAX)
 /** Nama orang: 2 sampai 150 karakter. */
 export const personNameField = () => z.string().trim().min(2).max(150)
 
+/**
+ * String opsional: di-trim, string kosong/null/undefined menjadi `null` (tidak dikirim sebagai "").
+ * Bila `pattern` diberikan, nilai yang terisi harus cocok dengan pola itu.
+ */
+export const optionalString = (
+  max = 255,
+  { pattern, message = 'format tidak valid', lowercase = false } = {},
+) =>
+  z
+    .string()
+    .trim()
+    .max(max)
+    .nullish()
+    .transform((v) => (v ? (lowercase ? v.toLowerCase() : v) : null))
+    .refine((v) => v === null || !pattern || pattern.test(v), { message })
+
+/** Email opsional: kosong menjadi `null`, terisi harus email valid (huruf kecil). */
+export const optionalEmailField = () =>
+  optionalString(255, { lowercase: true }).refine(
+    (v) => v === null || z.string().email().safeParse(v).success,
+    {
+      message: 'format email tidak valid',
+    },
+  )
+
+/** String wajib yang harus cocok pola tertentu (mis. kode). */
+export const patternField = (pattern, message, { min = 1, max = 255, lowercase = false } = {}) => {
+  const base = lowercase ? z.string().trim().toLowerCase() : z.string().trim()
+  return base.min(min).max(max).regex(pattern, message)
+}
+
+/** ID opsional (UUID dari Select): kosong menjadi `null`. */
+export const optionalId = () =>
+  z
+    .string()
+    .nullish()
+    .transform((v) => v || null)
+
 export { z }

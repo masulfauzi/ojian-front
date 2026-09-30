@@ -535,3 +535,219 @@ a {
   align-items: center;
   white-space: nowrap;
 }
+
+/* ---------- Sidebar grup & pemilih role ---------- */
+
+.sidebar-nav__group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  margin-top: 0.75rem;
+}
+
+.sidebar-nav__group-label {
+  padding: 0 0.85rem 0.25rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--app-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.topbar__role {
+  min-width: 11rem;
+}
+
+.topbar__role-value {
+  display: inline-flex;
+  gap: 0.45rem;
+  align-items: center;
+}
+
+.tag-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+@media (width < 576px) {
+  .topbar__role {
+    min-width: 0;
+    max-width: 9rem;
+  }
+}
+
+/* ---------- Form dua kolom & sel tabel ---------- */
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.form-grid__full {
+  grid-column: 1 / -1;
+}
+
+@media (width < 640px) {
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.cell-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.cell-stack__title {
+  font-weight: 500;
+}
+
+/* ---------- Matriks hak akses ---------- */
+
+.matrix-scroll {
+  overflow-x: auto;
+}
+
+.matrix {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.matrix th,
+.matrix td {
+  padding: 0.6rem 0.75rem;
+  text-align: center;
+  border-bottom: 1px solid var(--app-border);
+}
+
+.matrix .matrix__menu {
+  min-width: 14rem;
+  text-align: left;
+}
+
+.matrix__head {
+  display: inline-flex;
+  gap: 0.4rem;
+  align-items: center;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.matrix__group th {
+  padding-top: 1rem;
+  font-size: 0.8rem;
+  color: var(--app-text-muted);
+  text-align: left;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  background: var(--p-surface-50);
+}
+
+.matrix tr.is-granted td {
+  background: color-mix(in srgb, var(--p-primary-50) 60%, transparent);
+}
+
+.matrix__dirty {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  margin: 1rem 0 0;
+}
+
+.center-block {
+  display: grid;
+  padding: 3rem 0;
+  place-items: center;
+}
+
+.toolbar__filter--wide {
+  flex: 0 1 18rem;
+}
+
+/* ---------- Pohon menu ---------- */
+
+.menu-tree {
+  gap: 0.4rem;
+}
+
+.menu-tree--children {
+  min-height: 2.75rem;
+  margin: 0 0.5rem 0.5rem 2.25rem;
+  background: var(--app-surface);
+}
+
+.menu-row {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  padding: 0.5rem 0.75rem;
+}
+
+.menu-row.is-group {
+  background: var(--p-surface-50);
+  border-radius: var(--app-radius) var(--app-radius) 0 0;
+}
+
+.menu-row.is-inactive .menu-row__name {
+  color: var(--app-text-muted);
+  text-decoration: line-through;
+}
+
+.menu-row__icon {
+  width: 1.25rem;
+  color: var(--p-primary-color);
+  text-align: center;
+}
+
+.menu-row__text {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.menu-row__name {
+  font-weight: 500;
+}
+
+.menu-row__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+}
+
+.form-grid__icon {
+  display: flex;
+  gap: 0.5rem;
+  align-items: flex-start;
+}
+
+.form-grid__icon > :first-child {
+  flex: 1;
+}
+
+.icon-preview {
+  display: grid;
+  width: 2.5rem;
+  height: 2.5rem;
+  margin-top: 1.6rem;
+  font-size: 1.1rem;
+  color: var(--p-primary-color);
+  place-items: center;
+  border: 1px solid var(--app-border);
+  border-radius: var(--app-radius);
+}
+
+@media (width < 640px) {
+  .menu-row__tags {
+    display: none;
+  }
+
+  .menu-tree--children {
+    margin-left: 1rem;
+  }
+}

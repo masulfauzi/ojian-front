@@ -8,6 +8,7 @@
  * - `fieldErrors` dari response (error validasi 400/422) dipasang ke field dengan nama sama.
  *   Pemetaan nama field backend → form dilakukan di `*.api.js` (lihat `remapFieldErrors`).
  * - `statusFields` memetakan status tanpa detail field (mis. 409 email duplikat) ke satu field.
+ *   Nilainya boleh fungsi `(error) => namaField` bila field bergantung pada pesan error.
  *
  * @returns {(error: unknown) => boolean} true bila minimal satu error tampil di field form.
  */
@@ -21,7 +22,8 @@ export function useServerErrors(form, { statusFields = {} } = {}) {
       if (knownField(field)) errors[field] = message
     }
 
-    const statusField = statusFields[error?.status]
+    const mapping = statusFields[error?.status]
+    const statusField = typeof mapping === 'function' ? mapping(error) : mapping
     if (!Object.keys(errors).length && statusField && knownField(statusField)) {
       errors[statusField] = error.message
     }

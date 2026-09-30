@@ -1,7 +1,7 @@
 import axios from 'axios'
 import { normalizeError } from './errors'
 
-export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api/v1'
+export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3004/api/v1'
 
 // Titik pemasangan untuk auth. `shared` tidak boleh mengenal modul auth, jadi fungsi-fungsi ini
 // diisi dari luar oleh `app/bootstrap.js`.

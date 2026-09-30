@@ -98,6 +98,42 @@ describe('http client: refresh token', () => {
   })
 })
 
+describe('http client: ROLE_NOT_ACTIVE', () => {
+  afterEach(() => {
+    http.defaults.adapter = originalAdapter
+  })
+
+  it('401 dengan kode ROLE_NOT_ACTIVE memicu refresh lalu request diulang', async () => {
+    let token = 'old'
+    const refreshTokens = vi.fn(async () => {
+      token = 'new'
+    })
+    setAuthHandlers({ getAccessToken: () => token, refreshTokens, onUnauthorized: vi.fn() })
+    http.defaults.adapter = vi.fn(async (config) =>
+      config.headers.Authorization === 'Bearer new'
+        ? ok(config, { data: 'ok' })
+        : fail(config, 401, {
+            success: false,
+            code: 'ROLE_NOT_ACTIVE',
+            message: 'Role aktif sudah tidak berlaku',
+          }),
+    )
+
+    const res = await http.get('/users')
+
+    expect(refreshTokens).toHaveBeenCalledTimes(1)
+    expect(res.data.data).toBe('ok')
+  })
+
+  it('kode error backend tersedia di ApiError', async () => {
+    setAuthHandlers({ getAccessToken: () => null, refreshTokens: vi.fn(), onUnauthorized: vi.fn() })
+    http.defaults.adapter = async (config) =>
+      fail(config, 401, { code: 'ROLE_NOT_ACTIVE', message: 'x' })
+    const error = await http.post('/auth/login', {}, { skipAuthRefresh: true }).catch((e) => e)
+    expect(error.code).toBe('ROLE_NOT_ACTIVE')
+  })
+})
+
 describe('http client: normalisasi error', () => {
   afterEach(() => {
     http.defaults.adapter = originalAdapter

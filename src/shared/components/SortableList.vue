@@ -12,6 +12,10 @@ const props = defineProps({
   group: { type: [String, Object], default: undefined },
   disabled: { type: Boolean, default: false },
   animation: { type: Number, default: 150 },
+  /** Atribut tambahan untuk elemen tiap item: (item) => ({ 'data-type': ... }). */
+  itemAttrs: { type: Function, default: () => ({}) },
+  /** Opsi SortableJS lain (mis. { swapThreshold, fallbackOnBody } untuk daftar bersarang). */
+  options: { type: Object, default: () => ({}) },
 })
 
 const emit = defineEmits(['change'])
@@ -29,11 +33,17 @@ const keyOf = (item, index) =>
     :disabled="disabled"
     :animation="animation"
     ghost-class="sortable-ghost"
+    v-bind="options"
     @update="emit('change', { type: 'update', event: $event })"
     @add="emit('change', { type: 'add', event: $event })"
     @remove="emit('change', { type: 'remove', event: $event })"
   >
-    <div v-for="(item, index) in model" :key="keyOf(item, index)" class="sortable-list__item">
+    <div
+      v-for="(item, index) in model"
+      :key="keyOf(item, index)"
+      class="sortable-list__item"
+      v-bind="itemAttrs(item)"
+    >
       <slot name="item" :item="item" :index="index">{{ item }}</slot>
     </div>
   </VueDraggable>
