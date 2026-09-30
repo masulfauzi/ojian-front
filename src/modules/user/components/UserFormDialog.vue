@@ -1,24 +1,33 @@
 <script setup>
-import { computed, watch } from 'vue'
-import { useForm } from 'vee-validate'
+import { computed, ref, useId, watch } from 'vue'
+import { useField, useForm } from 'vee-validate'
 import { toTypedSchema } from '@vee-validate/zod'
 import Button from 'primevue/button'
 import Dialog from 'primevue/dialog'
+import Message from 'primevue/message'
+import FormField from '@/shared/components/form/FormField.vue'
 import FormInputText from '@/shared/components/form/FormInputText.vue'
+import FormMultiSelect from '@/shared/components/form/FormMultiSelect.vue'
 import FormPassword from '@/shared/components/form/FormPassword.vue'
 import FormSelect from '@/shared/components/form/FormSelect.vue'
 import FormSwitch from '@/shared/components/form/FormSwitch.vue'
 import { useNotify } from '@/shared/composables/useNotify'
 import { useServerErrors } from '@/shared/composables/useServerErrors'
 import { PASSWORD_MAX, PASSWORD_MIN } from '@/shared/schemas/common'
-import { ROLE_OPTIONS, ROLE_STUDENT } from '@/modules/auth'
+import { listRoleOptions } from '@/modules/role'
+import { SchoolSelect } from '@/modules/school'
 import { createUserSchema, updateUserSchema } from '../schemas/user.schema'
+import { assignableRoles, keepAvailable } from '../utils/roles'
 
 const visible = defineModel('visible', { type: Boolean, default: false })
 
 const props = defineProps({
   /** null = mode tambah; objek user = mode ubah. */
   user: { type: Object, default: null },
+  /** Pengguna platform boleh memilih sekolah (kosong = pengguna platform). */
+  chooseSchool: { type: Boolean, default: false },
+  /** Sekolah bawaan untuk user baru (sekolah admin yang login), null untuk pengguna platform. */
+  defaultSchoolId: { type: String, default: null },
   /** async (values) => void. Dialog menutup sendiri bila berhasil. */
   submit: { type: Function, required: true },
 })
@@ -30,20 +39,86 @@ const form = useForm({
     toTypedSchema(isEdit.value ? updateUserSchema : createUserSchema),
   ),
 })
-// 409 "Email sudah digunakan" tidak membawa detail field, jadi pasang ke field email.
-const applyServerErrors = useServerErrors(form, { statusFields: { 409: 'email' } })
+// 409: username atau email sudah dipakai (dibedakan dari pesan backend).
+const applyServerErrors = useServerErrors(form, {
+  statusFields: { 409: (error) => (/email/i.test(error.message) ? 'email' : 'username') },
+})
 const notify = useNotify()
+
+const schoolFieldId = useId()
+const school = useField('schoolId')
+
+// ---- Opsi role, bergantung pada sekolah ----
+const roleOptions = ref([])
+const rolesLoading = ref(false)
+let rolesSeq = 0
+
+async function loadRoles(schoolId) {
+  const seq = ++rolesSeq
+  rolesLoading.value = true
+  try {
+    const roles = assignableRoles(await listRoleOptions(schoolId), schoolId)
+    if (seq !== rolesSeq) return
+    roleOptions.value = roles
+    // Role yang tidak berlaku untuk sekolah baru dibuang dari pilihan.
+    const kept = keepAvailable(form.values.roleIds, roles)
+    if (kept.length !== (form.values.roleIds ?? []).length) form.setFieldValue('roleIds', kept)
+  } catch (error) {
+    if (seq === rolesSeq) notify.error(error)
+  } finally {
+    if (seq === rolesSeq) rolesLoading.value = false
+  }
+}
+
+watch(
+  () => form.values.schoolId,
+  (schoolId) => visible.value && loadRoles(schoolId ?? null),
+)
+
+// Role default dipilih dari role yang dicentang.
+const defaultRoleOptions = computed(() =>
+  roleOptions.value.filter((role) => (form.values.roleIds ?? []).includes(role.id)),
+)
+watch(
+  () => form.values.roleIds,
+  (roleIds) => {
+    if (form.values.defaultRoleId && !(roleIds ?? []).includes(form.values.defaultRoleId)) {
+      form.setFieldValue('defaultRoleId', null)
+    }
+  },
+)
 
 function initialValues() {
   if (props.user) {
-    const { name, email, role, isActive } = props.user
-    return { name, email, role, isActive }
+    const { name, username, email, phone, schoolId, roles, isActive } = props.user
+    return {
+      name,
+      username,
+      email: email ?? '',
+      phone: phone ?? '',
+      schoolId,
+      roleIds: roles.map((role) => role.id),
+      defaultRoleId: roles.find((role) => role.isDefault)?.id ?? null,
+      isActive,
+    }
   }
-  return { name: '', email: '', password: '', role: ROLE_STUDENT }
+  return {
+    name: '',
+    username: '',
+    email: '',
+    phone: '',
+    password: '',
+    schoolId: props.defaultSchoolId,
+    roleIds: [],
+    defaultRoleId: null,
+  }
 }
 
 watch(visible, (open) => {
-  if (open) form.resetForm({ values: initialValues() })
+  if (!open) return
+  const values = initialValues()
+  form.resetForm({ values })
+  loadRoles(values.schoolId ?? null)
 })
 
 const onSubmit = form.handleSubmit(async (values) => {
@@ -59,25 +134,87 @@ const onSubmit = form.handleSubmit(async (values) => {
 <template>
   <Dialog
     v-model:visible="visible"
-    :header="isEdit ? 'Ubah user' : 'Tambah user'"
-    :style="{ width: 'min(32rem, calc(100vw - 2rem))' }"
+    :header="isEdit ? 'Ubah pengguna' : 'Tambah pengguna'"
+    :style="{ width: 'min(44rem, calc(100vw - 2rem))' }"
     :closable="!form.isSubmitting.value"
     modal
   >
-    <form id="user-form" class="form-stack" novalidate @submit="onSubmit">
-      <FormInputText name="name" label="Nama" required />
-      <FormInputText name="email" label="Email" type="email" autocomplete="off" required />
+    <form id="user-form" class="form-grid" novalidate @submit="onSubmit">
+      <FormInputText class="form-grid__full" name="name" label="Nama lengkap" required />
+      <FormInputText
+        name="username"
+        label="Username"
+        placeholder="NIS, NIP, atau nama login"
+        hint="Unik per sekolah. Dipakai login bersama kode sekolah."
+        autocomplete="off"
+        required
+      />
+      <FormInputText
+        name="email"
+        label="Email"
+        type="email"
+        hint="Opsional. Bisa dipakai untuk login tanpa kode sekolah."
+        autocomplete="off"
+      />
+      <FormInputText name="phone" label="Telepon" />
       <FormPassword
         v-if="!isEdit"
         name="password"
         label="Password awal"
         autocomplete="new-password"
-        :hint="`${PASSWORD_MIN} sampai ${PASSWORD_MAX} karakter`"
+        :hint="`${PASSWORD_MIN}–${PASSWORD_MAX} karakter. Wajib diganti saat login pertama.`"
         required
       />
-      <FormSelect name="role" label="Role" :options="ROLE_OPTIONS" required />
+      <div v-else />
+
+      <FormField
+        v-if="chooseSchool"
+        :id="schoolFieldId"
+        class="form-grid__full"
+        label="Sekolah"
+        :error="school.errorMessage.value"
+        hint="Kosongkan untuk pengguna platform (hanya role Super Admin)."
+      >
+        <SchoolSelect
+          v-model="school.value.value"
+          :input-id="schoolFieldId"
+          :invalid="!!school.errorMessage.value"
+          placeholder="Pengguna platform (tanpa sekolah)"
+          active-only
+        />
+      </FormField>
+
+      <FormMultiSelect
+        name="roleIds"
+        label="Role"
+        :options="roleOptions"
+        option-label="name"
+        option-value="id"
+        :loading="rolesLoading"
+        placeholder="Pilih role"
+        required
+      />
+      <FormSelect
+        name="defaultRoleId"
+        label="Role default"
+        :options="defaultRoleOptions"
+        option-label="name"
+        option-value="id"
+        placeholder="Role pertama"
+        hint="Role aktif saat login."
+        show-clear
+      />
       <FormSwitch v-if="isEdit" name="isActive" label="Status" />
     </form>
+
+    <Message
+      v-if="isEdit && user?.mustChangePassword"
+      severity="warn"
+      :closable="false"
+      style="margin-top: 1rem"
+    >
+      Pengguna ini belum mengganti password awal.
+    </Message>
 
     <template #footer>
       <div class="dialog-footer">

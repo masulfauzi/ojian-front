@@ -21,20 +21,22 @@ describe('user store', () => {
     vi.clearAllMocks()
   })
 
-  it('fetchUsers menyimpan item dan meta', async () => {
-    userApi.listUsers.mockResolvedValue(
-      page([{ id: '1', name: 'A' }], { total: 21, totalPages: 3 }),
-    )
+  it('fetchUsers meneruskan filter dan menyimpan item serta meta', async () => {
+    userApi.listUsers.mockResolvedValue(page([{ id: '1' }], { total: 21, totalPages: 3 }))
     const store = useUserStore()
 
-    await store.fetchUsers({ page: 1, search: 'a', role: 'student' })
+    await store.fetchUsers({ page: 1, search: 'a', roleId: 'r1', isActive: true, schoolId: 's1' })
 
-    expect(userApi.listUsers).toHaveBeenCalledWith({
-      page: 1,
-      limit: 10,
-      search: 'a',
-      role: 'student',
-    })
+    expect(userApi.listUsers).toHaveBeenCalledWith(
+      expect.objectContaining({
+        page: 1,
+        limit: 10,
+        search: 'a',
+        roleId: 'r1',
+        isActive: true,
+        schoolId: 's1',
+      }),
+    )
     expect(store.items).toHaveLength(1)
     expect(store.meta.total).toBe(21)
     expect(store.loading).toBe(false)
