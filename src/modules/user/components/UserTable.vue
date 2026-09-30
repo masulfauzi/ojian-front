@@ -64,9 +64,9 @@ const ROLE_SEVERITY = {
         />
       </template>
     </Column>
-    <Column header="Aksi" :style="{ width: '7rem' }">
+    <Column header="Aksi">
       <template #body="{ data }">
-        <div class="toolbar">
+        <div class="row-actions">
           <Button
             v-tooltip.top="'Ubah'"
             icon="pi pi-pencil"

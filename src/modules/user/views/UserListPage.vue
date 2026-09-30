@@ -46,8 +46,6 @@ watch(search, (value) => {
   if (value !== searchInput.value.trim()) searchInput.value = value
 })
 
-const roleFilterOptions = [{ value: '', label: 'Semua role' }, ...ROLE_OPTIONS]
-
 async function load() {
   try {
     await store.fetchUsers({
@@ -130,12 +128,14 @@ async function removeUser(user) {
             </IconField>
             <Select
               class="toolbar__filter"
-              :model-value="role"
-              :options="roleFilterOptions"
+              :model-value="role || null"
+              :options="ROLE_OPTIONS"
               option-label="label"
               option-value="value"
+              placeholder="Semua role"
               aria-label="Filter role"
-              @update:model-value="(value) => updateQuery({ role: value, page: 1 })"
+              show-clear
+              @update:model-value="(value) => updateQuery({ role: value ?? '', page: 1 })"
             />
           </div>
 

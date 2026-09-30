@@ -511,3 +511,27 @@ a {
   background: var(--p-surface-100);
   border-radius: var(--app-radius);
 }
+
+.rich-text-editor__tool .p-button-label {
+  min-width: 1em;
+}
+
+.rich-text-editor__tool.is-bold .p-button-label {
+  font-weight: 800;
+}
+
+.rich-text-editor__tool.is-italic .p-button-label {
+  font-family: Georgia, serif;
+  font-style: italic;
+}
+
+.rich-text-editor__tool.is-underline .p-button-label {
+  text-decoration: underline;
+}
+
+.row-actions {
+  display: flex;
+  gap: 0.25rem;
+  align-items: center;
+  white-space: nowrap;
+}

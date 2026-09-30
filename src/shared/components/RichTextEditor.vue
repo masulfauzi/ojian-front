@@ -4,7 +4,7 @@ import { Editor, EditorContent } from '@tiptap/vue-3'
 import StarterKit from '@tiptap/starter-kit'
 import Image from '@tiptap/extension-image'
 import Placeholder from '@tiptap/extension-placeholder'
-import Mathematics from '@tiptap/extension-mathematics'
+import { BlockMath, InlineMath } from '@tiptap/extension-mathematics'
 import Button from 'primevue/button'
 import Dialog from 'primevue/dialog'
 import InputText from 'primevue/inputtext'
@@ -53,11 +53,14 @@ const editor = shallowRef(
       StarterKit.configure({ heading: { levels: [2, 3] }, link: { openOnClick: false } }),
       Image.configure({ inline: false, allowBase64: false }),
       Placeholder.configure({ placeholder: () => props.placeholder }),
-      Mathematics.configure({
+      // Klik rumus untuk mengubahnya. Rumus blok memakai displayMode agar sama dengan RichTextViewer.
+      InlineMath.configure({
         katexOptions: KATEX_OPTIONS,
-        // Klik rumus untuk mengubahnya.
-        inlineOptions: { onClick: (node, pos) => openDialog('inline-math', node.attrs.latex, pos) },
-        blockOptions: { onClick: (node, pos) => openDialog('block-math', node.attrs.latex, pos) },
+        onClick: (node, pos) => openDialog('inline-math', node.attrs.latex, pos),
+      }),
+      BlockMath.configure({
+        katexOptions: { ...KATEX_OPTIONS, displayMode: true },
+        onClick: (node, pos) => openDialog('block-math', node.attrs.latex, pos),
       }),
     ],
     onUpdate: ({ editor: instance }) => {
@@ -107,10 +110,18 @@ function removeMath() {
 
 // ---- Toolbar ----
 const tools = [
-  { icon: 'pi pi-bold', label: 'Tebal', active: 'bold', run: (c) => c.toggleBold() },
-  { icon: 'pi pi-italic', label: 'Miring', active: 'italic', run: (c) => c.toggleItalic() },
+  // primeicons tidak punya ikon tebal/miring/garis bawah, jadi dipakai huruf bergaya.
+  { text: 'B', textClass: 'is-bold', label: 'Tebal', active: 'bold', run: (c) => c.toggleBold() },
   {
-    icon: 'pi pi-underline',
+    text: 'I',
+    textClass: 'is-italic',
+    label: 'Miring',
+    active: 'italic',
+    run: (c) => c.toggleItalic(),
+  },
+  {
+    text: 'U',
+    textClass: 'is-underline',
     label: 'Garis bawah',
     active: 'underline',
     run: (c) => c.toggleUnderline(),
@@ -154,6 +165,7 @@ const isActive = (tool) => Boolean(tool.active && editor.value?.isActive(tool.ac
           v-else
           v-tooltip.bottom="tool.label"
           :icon="tool.icon"
+          :class="['rich-text-editor__tool', tool.textClass]"
           :label="tool.text"
           :aria-label="tool.label"
           :aria-pressed="tool.active ? isActive(tool) : undefined"
