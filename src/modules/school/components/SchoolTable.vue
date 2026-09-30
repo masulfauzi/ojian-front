@@ -1,0 +1,95 @@
+<script setup>
+import Button from 'primevue/button'
+import Column from 'primevue/column'
+import DataTable from 'primevue/datatable'
+import Tag from 'primevue/tag'
+import EmptyState from '@/shared/components/EmptyState.vue'
+import StatusTag from '@/shared/components/StatusTag.vue'
+import { EDUCATION_LEVEL_LABELS } from '../constants'
+
+defineProps({
+  schools: { type: Array, required: true },
+  loading: { type: Boolean, default: false },
+  totalRecords: { type: Number, default: 0 },
+  page: { type: Number, default: 1 },
+  rows: { type: Number, default: 10 },
+  canUpdate: { type: Boolean, default: false },
+  canDelete: { type: Boolean, default: false },
+})
+
+const emit = defineEmits(['page', 'edit', 'delete'])
+</script>
+
+<template>
+  <DataTable
+    :value="schools"
+    :loading="loading"
+    :total-records="totalRecords"
+    :rows="rows"
+    :first="(page - 1) * rows"
+    data-key="id"
+    lazy
+    paginator
+    paginator-template="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport"
+    current-page-report-template="{first}–{last} dari {totalRecords} sekolah"
+    striped-rows
+    @page="emit('page', $event.page + 1)"
+  >
+    <template #empty>
+      <EmptyState
+        icon="pi pi-building"
+        title="Belum ada sekolah"
+        description="Tidak ada sekolah yang cocok dengan pencarian atau filter."
+      />
+    </template>
+
+    <Column header="Sekolah">
+      <template #body="{ data }">
+        <div class="cell-stack">
+          <span class="cell-stack__title">{{ data.name }}</span>
+          <span class="text-muted">
+            {{ data.code }}<template v-if="data.npsn"> · NPSN {{ data.npsn }}</template>
+          </span>
+        </div>
+      </template>
+    </Column>
+    <Column header="Jenjang">
+      <template #body="{ data }">
+        <Tag :value="EDUCATION_LEVEL_LABELS[data.educationLevel] ?? data.educationLevel" />
+        <span v-if="data.ownership" class="text-muted"> · {{ data.ownership }}</span>
+      </template>
+    </Column>
+    <Column header="Kota">
+      <template #body="{ data }">{{ data.city || '-' }}</template>
+    </Column>
+    <Column header="Status">
+      <template #body="{ data }"><StatusTag :active="data.isActive" /></template>
+    </Column>
+    <Column v-if="canUpdate || canDelete" header="Aksi">
+      <template #body="{ data }">
+        <div class="row-actions">
+          <Button
+            v-if="canUpdate"
+            v-tooltip.top="'Ubah'"
+            icon="pi pi-pencil"
+            severity="secondary"
+            text
+            rounded
+            :aria-label="`Ubah ${data.name}`"
+            @click="emit('edit', data)"
+          />
+          <Button
+            v-if="canDelete"
+            v-tooltip.top="'Hapus'"
+            icon="pi pi-trash"
+            severity="danger"
+            text
+            rounded
+            :aria-label="`Hapus ${data.name}`"
+            @click="emit('delete', data)"
+          />
+        </div>
+      </template>
+    </Column>
+  </DataTable>
+</template>
