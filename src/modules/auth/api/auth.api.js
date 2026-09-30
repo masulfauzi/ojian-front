@@ -7,7 +7,6 @@ import { remapFieldErrors } from '@/shared/api/errors'
 const PUBLIC = { skipAuth: true, skipAuthRefresh: true }
 
 const FIELD_MAP = {
-  school_code: 'schoolCode',
   old_password: 'oldPassword',
   new_password: 'newPassword',
 }
@@ -81,11 +80,12 @@ export const toPermissions = (data) =>
     ]),
   )
 
-/** Login dengan email, atau username + kode sekolah (kosong untuk pengguna platform). */
-export async function login({ login, password, schoolCode }) {
-  const body = { login, password }
-  if (schoolCode) body.school_code = schoolCode
-  const res = await http.post('/auth/login', body, PUBLIC).catch(rethrow)
+/**
+ * Login dengan email (admin) atau username yang unik global (NISN untuk siswa, NIP atau
+ * nama login lain untuk guru). Backend menganggap `login` berisi "@" sebagai email.
+ */
+export async function login({ login, password }) {
+  const res = await http.post('/auth/login', { login, password }, PUBLIC).catch(rethrow)
   return toSession(unwrap(res))
 }
 

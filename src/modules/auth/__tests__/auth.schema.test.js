@@ -7,14 +7,21 @@ const errorsOf = (schema, value) => {
 }
 
 describe('loginSchema', () => {
-  it('menerima email tanpa kode sekolah', () => {
-    const result = loginSchema.parse({ login: ' admin@example.com ', password: 'rahasia123' })
-    expect(result).toEqual({ login: 'admin@example.com', password: 'rahasia123', schoolCode: '' })
+  it('menerima email dan men-trim login', () => {
+    expect(loginSchema.parse({ login: ' admin@example.com ', password: 'rahasia123' })).toEqual({
+      login: 'admin@example.com',
+      password: 'rahasia123',
+    })
   })
 
-  it('menerima username + kode sekolah dan menormalisasi kode', () => {
-    const result = loginSchema.parse({ login: '2024001', password: 'x', schoolCode: ' SMAN1-JKT ' })
-    expect(result.schoolCode).toBe('sman1-jkt')
+  it('menerima username global (NISN) tanpa kode sekolah', () => {
+    expect(loginSchema.parse({ login: '0012345678', password: 'x' }).login).toBe('0012345678')
+  })
+
+  it('field tambahan (mis. schoolCode lama) dibuang', () => {
+    expect(
+      loginSchema.parse({ login: 'budi', password: 'x', schoolCode: 'sman1' }),
+    ).not.toHaveProperty('schoolCode')
   })
 
   it('login dan password wajib diisi', () => {
@@ -23,14 +30,10 @@ describe('loginSchema', () => {
     expect(errors.password).toEqual(['wajib diisi'])
   })
 
-  it('password maksimal 72 karakter, kode sekolah maksimal 30', () => {
-    const errors = errorsOf(loginSchema, {
-      login: 'budi',
-      password: 'a'.repeat(73),
-      schoolCode: 'a'.repeat(31),
-    })
-    expect(errors.password).toEqual(['maksimal 72 karakter'])
-    expect(errors.schoolCode).toEqual(['maksimal 30 karakter'])
+  it('password maksimal 72 karakter', () => {
+    expect(errorsOf(loginSchema, { login: 'budi', password: 'a'.repeat(73) }).password).toEqual([
+      'maksimal 72 karakter',
+    ])
   })
 })
 

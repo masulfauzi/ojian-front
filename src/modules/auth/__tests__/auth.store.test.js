@@ -61,7 +61,7 @@ describe('auth store', () => {
     authApi.login.mockResolvedValue(session())
     const auth = useAuthStore()
 
-    await auth.login({ login: 'budi', password: 'rahasia123', schoolCode: 'sman1' })
+    await auth.login({ login: '0012345678', password: 'rahasia123' })
 
     expect(auth.isAuthenticated).toBe(true)
     expect(auth.accessToken).toBe('access-1')

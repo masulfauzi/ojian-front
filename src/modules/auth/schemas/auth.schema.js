@@ -1,11 +1,9 @@
 import { existingPasswordField, passwordField, requiredString, z } from '@/shared/schemas/common'
 
 export const loginSchema = z.object({
-  // Email atau username.
+  // Email (admin) atau username unik global: NISN untuk siswa, NIP/nama login untuk guru.
   login: requiredString(255),
   password: existingPasswordField(),
-  // Kosong untuk pengguna platform (super admin).
-  schoolCode: z.string().trim().toLowerCase().max(30).optional().default(''),
 })
 
 export const changePasswordSchema = z
