@@ -751,3 +751,86 @@ a {
     margin-left: 1rem;
   }
 }
+
+/* ---------- Registrasi sekolah ---------- */
+
+.auth-layout__content--wide {
+  max-width: 52rem;
+}
+
+.auth-card__footer {
+  margin: 1.25rem 0 0;
+  color: var(--app-text-muted);
+  text-align: center;
+}
+
+.registration-card .p-steppanels {
+  padding: 1.25rem 0 0;
+}
+
+.registration-card .p-steppanel {
+  background: transparent;
+}
+
+.registration-intro {
+  margin: 0;
+}
+
+.registration-npsn {
+  display: flex;
+  gap: 0.75rem;
+  align-items: flex-start;
+}
+
+.registration-npsn > :first-child {
+  flex: 1;
+}
+
+.registration-npsn > .p-button {
+  margin-top: 1.75rem;
+}
+
+.registration-summary {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 0.35rem 1rem;
+  margin: 0;
+  padding: 0.75rem 1rem;
+  background: var(--p-surface-50);
+  border: 1px solid var(--app-border);
+  border-radius: var(--app-radius);
+}
+
+.registration-summary dt {
+  color: var(--app-text-muted);
+}
+
+.registration-summary dd {
+  margin: 0;
+  font-weight: 500;
+}
+
+.registration-actions {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  margin-top: 1.5rem;
+}
+
+.registration-actions__spacer {
+  flex: 1;
+}
+
+.registration-error {
+  margin-bottom: 1rem;
+}
+
+@media (width < 640px) {
+  .registration-card .p-step-title {
+    display: none;
+  }
+
+  .auth-card {
+    padding: 1.25rem;
+  }
+}

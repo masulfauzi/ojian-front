@@ -30,5 +30,9 @@ async function handleLogin(credentials) {
       <p class="auth-card__subtitle">Masuk untuk melanjutkan</p>
     </div>
     <LoginForm :submit="handleLogin" />
+    <p class="auth-card__footer">
+      Sekolah Anda belum terdaftar?
+      <RouterLink :to="{ name: 'register-school' }">Daftarkan sekolah</RouterLink>
+    </p>
   </div>
 </template>

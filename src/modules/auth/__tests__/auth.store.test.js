@@ -156,6 +156,26 @@ describe('auth store', () => {
     expect(authApi.fetchMenus).toHaveBeenCalledTimes(1)
   })
 
+  it('startSession memakai sesi dari endpoint lain (mis. registrasi sekolah)', async () => {
+    const auth = useAuthStore()
+
+    await auth.startSession(session())
+
+    expect(auth.isAuthenticated).toBe(true)
+    expect(auth.initialized).toBe(true)
+    expect(storage.get(REFRESH_TOKEN_KEY)).toBe('refresh-1')
+    expect(auth.can('users', 'create')).toBe(true)
+  })
+
+  it('startSession gagal memuat akses: sesi dibersihkan', async () => {
+    authApi.fetchPermissions.mockRejectedValue(new Error('gagal'))
+    const auth = useAuthStore()
+
+    await expect(auth.startSession(session())).rejects.toThrow('gagal')
+    expect(auth.isAuthenticated).toBe(false)
+    expect(storage.get(REFRESH_TOKEN_KEY)).toBeNull()
+  })
+
   it('logout membersihkan sesi', async () => {
     authApi.login.mockResolvedValue(session())
     const auth = useAuthStore()

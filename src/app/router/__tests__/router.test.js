@@ -40,6 +40,7 @@ describe('router', () => {
     expect(names).toEqual(
       expect.arrayContaining([
         'login',
+        'register-school',
         'change-password',
         'profile',
         'dashboard',
@@ -91,6 +92,16 @@ describe('router', () => {
     expect(router.currentRoute.value.name).toBe('change-password')
     await router.push('/profile')
     expect(router.currentRoute.value.name).toBe('change-password')
+  })
+
+  it('registrasi sekolah terbuka tanpa login; pengguna yang sudah login dialihkan', async () => {
+    await router.push('/register-school')
+    expect(router.currentRoute.value.name).toBe('register-school')
+
+    loginWith({ dashboard: viewOnly })
+    await router.push('/login')
+    await router.push('/register-school')
+    expect(router.currentRoute.value.name).toBe('dashboard')
   })
 
   it('path tidak dikenal → 404', async () => {

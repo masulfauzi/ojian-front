@@ -74,8 +74,12 @@ export const useAuthStore = defineStore('auth', () => {
     storage.remove(REFRESH_TOKEN_KEY)
   }
 
-  async function login(credentials) {
-    applySession(await authApi.login(credentials))
+  /**
+   * Mulai sesi dari response auth (login atau registrasi sekolah): simpan token, user, dan role,
+   * lalu muat menu serta hak akses. Bila akses gagal dimuat, sesi dibersihkan.
+   */
+  async function startSession(session) {
+    applySession(session)
     try {
       await loadAccess()
     } catch (error) {
@@ -84,6 +88,10 @@ export const useAuthStore = defineStore('auth', () => {
     }
     initialized.value = true
     return user.value
+  }
+
+  async function login(credentials) {
+    return startSession(await authApi.login(credentials))
   }
 
   /** Tukar refresh token dengan pasangan token baru. Melempar error bila gagal. */
@@ -161,6 +169,7 @@ export const useAuthStore = defineStore('auth', () => {
     can,
     homeRoute,
     login,
+    startSession,
     logout,
     refresh,
     loadSession,
