@@ -1,3 +1,4 @@
+import { DEFAULT_TIMEZONE } from '@/shared/constants/timezones'
 import { optionalEmailField, optionalString, patternField, z } from '@/shared/schemas/common'
 import { EDUCATION_LEVELS } from '../constants'
 
@@ -20,6 +21,12 @@ const baseFields = {
   postalCode: optionalString(10, { pattern: /^[0-9]+$/, message: 'kode pos hanya angka' }),
   phone: optionalString(30),
   email: optionalEmailField(),
+  timezone: z
+    .string()
+    .trim()
+    .max(40)
+    .nullish()
+    .transform((v) => v || DEFAULT_TIMEZONE),
   logoUrl: optionalString(2000, {
     pattern: /^https?:\/\/\S+$/i,
     message: 'harus URL yang diawali http:// atau https://',

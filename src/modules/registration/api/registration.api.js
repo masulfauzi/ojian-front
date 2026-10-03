@@ -37,6 +37,7 @@ const OPTIONAL_FIELDS = {
   postalCode: 'postal_code',
   schoolPhone: 'school_phone',
   schoolEmail: 'school_email',
+  timezone: 'timezone',
   adminPhone: 'admin_phone',
 }
 

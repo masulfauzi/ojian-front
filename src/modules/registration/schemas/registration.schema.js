@@ -1,3 +1,4 @@
+import { DEFAULT_TIMEZONE } from '@/shared/constants/timezones'
 import {
   emailField,
   optionalEmailField,
@@ -31,6 +32,12 @@ export const registrationSchema = z
     postalCode: optionalString(10, { pattern: /^[0-9]+$/, message: 'kode pos hanya angka' }),
     schoolPhone: optionalString(30),
     schoolEmail: optionalEmailField(),
+    timezone: z
+      .string()
+      .trim()
+      .max(40)
+      .nullish()
+      .transform((v) => v || DEFAULT_TIMEZONE),
 
     // Langkah 3: akun admin sekolah
     adminName: personNameField(),
@@ -62,6 +69,7 @@ export const STEP_FIELDS = [
     'postalCode',
     'schoolPhone',
     'schoolEmail',
+    'timezone',
   ],
   ['adminName', 'adminUsername', 'adminEmail', 'adminPhone', 'password', 'confirmPassword'],
 ]
@@ -71,6 +79,7 @@ export const emptyRegistration = () => ({
   ...Object.fromEntries(STEP_FIELDS.flat().map((field) => [field, ''])),
   educationLevel: null,
   ownership: null,
+  timezone: DEFAULT_TIMEZONE,
 })
 
 /** Nomor langkah (1-based) pertama yang memuat salah satu field, atau null. */

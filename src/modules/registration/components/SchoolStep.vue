@@ -2,6 +2,7 @@
 import FormInputText from '@/shared/components/form/FormInputText.vue'
 import FormSelect from '@/shared/components/form/FormSelect.vue'
 import FormTextarea from '@/shared/components/form/FormTextarea.vue'
+import { TIMEZONE_OPTIONS } from '@/shared/constants/timezones'
 import { EDUCATION_LEVEL_OPTIONS, OWNERSHIP_OPTIONS } from '@/modules/school'
 </script>
 
@@ -34,6 +35,13 @@ import { EDUCATION_LEVEL_OPTIONS, OWNERSHIP_OPTIONS } from '@/modules/school'
     <FormInputText name="province" label="Provinsi" />
     <FormInputText name="postalCode" label="Kode pos" />
     <FormInputText name="schoolPhone" label="Telepon sekolah" />
+    <FormSelect
+      name="timezone"
+      label="Zona waktu"
+      :options="TIMEZONE_OPTIONS"
+      hint="Untuk jadwal ujian."
+      required
+    />
     <FormInputText
       class="form-grid__full"
       name="schoolEmail"

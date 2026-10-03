@@ -2,6 +2,7 @@
 // Sumber: Swagger exam-api — school.SchoolRequest dan school.SchoolResponse.
 import { http, unwrap, unwrapList } from '@/shared/api/http'
 import { remapFieldErrors } from '@/shared/api/errors'
+import { DEFAULT_TIMEZONE } from '@/shared/constants/timezones'
 
 const FIELD_MAP = {
   education_level: 'educationLevel',
@@ -28,6 +29,7 @@ export const toSchool = (data) => ({
   phone: data.phone ?? null,
   email: data.email ?? null,
   logoUrl: data.logo_url ?? null,
+  timezone: data.timezone || DEFAULT_TIMEZONE,
   isActive: Boolean(data.is_active),
   createdAt: data.created_at,
   updatedAt: data.updated_at,
@@ -47,6 +49,7 @@ function toPayload(values) {
     phone: values.phone ?? null,
     email: values.email ?? null,
     logo_url: values.logoUrl ?? null,
+    timezone: values.timezone || DEFAULT_TIMEZONE,
   }
   // is_active hanya dipakai saat update; saat create sekolah selalu aktif.
   if (typeof values.isActive === 'boolean') payload.is_active = values.isActive

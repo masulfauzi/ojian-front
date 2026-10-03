@@ -9,6 +9,7 @@ import FormSelect from '@/shared/components/form/FormSelect.vue'
 import FormSwitch from '@/shared/components/form/FormSwitch.vue'
 import FormTextarea from '@/shared/components/form/FormTextarea.vue'
 import { useNotify } from '@/shared/composables/useNotify'
+import { DEFAULT_TIMEZONE, TIMEZONE_OPTIONS } from '@/shared/constants/timezones'
 import { useServerErrors } from '@/shared/composables/useServerErrors'
 import { EDUCATION_LEVEL_OPTIONS, OWNERSHIP_OPTIONS } from '../constants'
 import { createSchoolSchema, updateSchoolSchema } from '../schemas/school.schema'
@@ -56,6 +57,7 @@ function initialValues() {
   const values = Object.fromEntries(FIELDS.map((key) => [key, props.school?.[key] ?? '']))
   values.educationLevel = props.school?.educationLevel ?? null
   values.ownership = props.school?.ownership ?? null
+  values.timezone = props.school?.timezone ?? DEFAULT_TIMEZONE
   if (props.school) values.isActive = props.school.isActive
   return values
 }
@@ -120,6 +122,13 @@ const onSubmit = form.handleSubmit(async (values) => {
       <FormInputText name="phone" label="Telepon" />
       <FormInputText name="email" label="Email" type="email" />
       <FormInputText name="logoUrl" label="URL logo" placeholder="https://…" />
+      <FormSelect
+        name="timezone"
+        label="Zona waktu"
+        :options="TIMEZONE_OPTIONS"
+        hint="Dipakai untuk menampilkan dan mengisi waktu ujian."
+        required
+      />
       <FormSwitch v-if="isEdit && !restricted" name="isActive" label="Status" />
     </form>
 
