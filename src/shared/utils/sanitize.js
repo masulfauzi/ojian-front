@@ -7,7 +7,7 @@ const MATH_SELECTOR = '[data-type="inline-math"], [data-type="block-math"]'
 // atribut `data-type`/`data-latex` diizinkan untuk node rumus TipTap.
 const INPUT_CONFIG = {
   USE_PROFILES: { html: true },
-  ADD_ATTR: ['data-type', 'data-latex', 'target'],
+  ADD_ATTR: ['data-type', 'data-latex', 'data-media-id', 'target'],
   FORBID_TAGS: [
     'style',
     'form',
@@ -25,7 +25,7 @@ const INPUT_CONFIG = {
 // Tahap 2: setelah rumus dirender KaTeX (butuh MathML, SVG, dan atribut style).
 const OUTPUT_CONFIG = {
   USE_PROFILES: { html: true, svg: true, mathMl: true },
-  ADD_ATTR: ['data-type', 'data-latex', 'target', 'encoding'],
+  ADD_ATTR: ['data-type', 'data-latex', 'data-media-id', 'target', 'encoding'],
   FORBID_TAGS: ['form', 'input', 'button', 'textarea', 'select', 'iframe', 'object', 'embed'],
 }
 

@@ -1,5 +1,5 @@
 <script setup>
-import { computed, onBeforeUnmount, reactive, shallowRef, watch } from 'vue'
+import { computed, onBeforeUnmount, reactive, ref, shallowRef, watch } from 'vue'
 import { Editor, EditorContent } from '@tiptap/vue-3'
 import StarterKit from '@tiptap/starter-kit'
 import Image from '@tiptap/extension-image'
@@ -9,15 +9,46 @@ import Button from 'primevue/button'
 import Dialog from 'primevue/dialog'
 import InputText from 'primevue/inputtext'
 import Textarea from 'primevue/textarea'
+import { useNotify } from '@/shared/composables/useNotify'
 import { KATEX_OPTIONS, renderMathToString } from '@/shared/utils/math'
+
+// Gambar unggahan direferensikan lewat data-media-id (URL bertanda tangan bisa kedaluwarsa,
+// jadi pemanggil membuang src sebelum menyimpan dan mengisinya lagi saat menampilkan).
+const MediaImage = Image.extend({
+  addAttributes() {
+    return {
+      ...this.parent?.(),
+      mediaId: {
+        default: null,
+        parseHTML: (el) => el.getAttribute('data-media-id'),
+        renderHTML: (attrs) => (attrs.mediaId ? { 'data-media-id': attrs.mediaId } : {}),
+      },
+    }
+  },
+})
+
+const IMAGE_ACCEPT = 'image/png,image/jpeg,image/gif,image/webp'
 
 const model = defineModel({ type: String, default: '' })
 
 const props = defineProps({
   placeholder: { type: String, default: 'Tulis di sini…' },
   disabled: { type: Boolean, default: false },
-  minHeight: { type: String, default: '10rem' },
+  /** Tinggi minimal area tulis; default 10rem, atau 2.5rem pada mode ringkas. */
+  minHeight: { type: String, default: null },
+  /** Toolbar ringkas untuk isian pendek (opsi, pernyataan). */
+  compact: { type: Boolean, default: false },
+  /**
+   * Unggah gambar: async (file) => ({ mediaId, url }). Bila diisi, tombol gambar membuka
+   * pemilih file; bila tidak, gambar disisipkan lewat URL.
+   */
+  uploadImage: { type: Function, default: null },
 })
+
+const notify = useNotify()
+const fileInput = ref()
+const uploading = ref(false)
+const areaHeight = computed(() => props.minHeight ?? (props.compact ? '2.5rem' : '10rem'))
 
 // ---- Dialog sisip gambar / rumus ----
 const dialog = reactive({
@@ -51,7 +82,7 @@ const editor = shallowRef(
     editable: !props.disabled,
     extensions: [
       StarterKit.configure({ heading: { levels: [2, 3] }, link: { openOnClick: false } }),
-      Image.configure({ inline: false, allowBase64: false }),
+      MediaImage.configure({ inline: false, allowBase64: false }),
       Placeholder.configure({ placeholder: () => props.placeholder }),
       // Klik rumus untuk mengubahnya. Rumus blok memakai displayMode agar sama dengan RichTextViewer.
       InlineMath.configure({
@@ -108,8 +139,31 @@ function removeMath() {
   dialog.visible = false
 }
 
+// ---- Gambar unggahan ----
+async function onImagePicked(event) {
+  const file = event.target.files?.[0]
+  event.target.value = ''
+  if (!file) return
+  uploading.value = true
+  try {
+    const { mediaId, url } = await props.uploadImage(file)
+    editor.value.chain().focus().setImage({ src: url, mediaId, alt: file.name }).run()
+  } catch (error) {
+    notify.error(error, 'Gagal mengunggah gambar')
+  } finally {
+    uploading.value = false
+  }
+}
+
+/** Sisipkan teks di posisi kursor (mis. penanda rumpang {{b1}}). */
+function insertText(text) {
+  editor.value?.chain().focus().insertContent(text).run()
+}
+
+defineExpose({ insertText })
+
 // ---- Toolbar ----
-const tools = [
+const allTools = [
   // primeicons tidak punya ikon tebal/miring/garis bawah, jadi dipakai huruf bergaya.
   { text: 'B', textClass: 'is-bold', label: 'Tebal', active: 'bold', run: (c) => c.toggleBold() },
   {
@@ -140,15 +194,22 @@ const tools = [
     run: (c) => c.toggleOrderedList(),
   },
   { separator: true },
-  { icon: 'pi pi-image', label: 'Sisipkan gambar (URL)', dialog: 'image' },
-  { text: 'ƒx', label: 'Sisipkan rumus inline', dialog: 'inline-math' },
+  { icon: 'pi pi-image', label: 'Sisipkan gambar', image: true, compact: true },
+  { text: 'ƒx', label: 'Sisipkan rumus inline', dialog: 'inline-math', compact: true },
   { text: '∑', label: 'Sisipkan rumus blok', dialog: 'block-math' },
   { separator: true },
   { icon: 'pi pi-undo', label: 'Urungkan', run: (c) => c.undo() },
   { icon: 'pi pi-refresh', label: 'Ulangi', run: (c) => c.redo() },
 ]
 
+// Mode ringkas: hanya format dasar, gambar, dan rumus inline.
+const COMPACT_ACTIVE = new Set(['bold', 'italic', 'underline'])
+const tools = computed(() =>
+  props.compact ? allTools.filter((t) => t.compact || COMPACT_ACTIVE.has(t.active)) : allTools,
+)
+
 function runTool(tool) {
+  if (tool.image) return props.uploadImage ? fileInput.value.click() : openDialog('image')
   if (tool.dialog) return openDialog(tool.dialog)
   tool.run(editor.value.chain().focus()).run()
 }
@@ -157,7 +218,7 @@ const isActive = (tool) => Boolean(tool.active && editor.value?.isActive(tool.ac
 </script>
 
 <template>
-  <div class="rich-text-editor" :class="{ 'is-disabled': disabled }">
+  <div class="rich-text-editor" :class="{ 'is-disabled': disabled, 'is-compact': compact }">
     <div class="rich-text-editor__toolbar" role="toolbar" aria-label="Format teks">
       <template v-for="(tool, index) in tools" :key="index">
         <span v-if="tool.separator" class="rich-text-editor__separator" aria-hidden="true" />
@@ -171,7 +232,8 @@ const isActive = (tool) => Boolean(tool.active && editor.value?.isActive(tool.ac
           :aria-pressed="tool.active ? isActive(tool) : undefined"
           :severity="isActive(tool) ? 'primary' : 'secondary'"
           :text="!isActive(tool)"
-          :disabled="disabled"
+          :disabled="disabled || (tool.image && uploading)"
+          :loading="tool.image && uploading"
           size="small"
           @mousedown.prevent
           @click="runTool(tool)"
@@ -182,8 +244,17 @@ const isActive = (tool) => Boolean(tool.active && editor.value?.isActive(tool.ac
     <EditorContent
       :editor="editor"
       class="rich-text-editor__content rich-text"
-      :style="{ minHeight }"
+      :style="{ minHeight: areaHeight }"
       @click="editor?.commands.focus()"
+    />
+
+    <input
+      v-if="uploadImage"
+      ref="fileInput"
+      type="file"
+      :accept="IMAGE_ACCEPT"
+      hidden
+      @change="onImagePicked"
     />
 
     <Dialog
