@@ -60,6 +60,19 @@ describe('router', () => {
         'question-detail',
         'question-edit',
         'stimuli',
+        'exams',
+        'exam-detail',
+        'schedules',
+        'schedule-new',
+        'schedule-detail',
+        'schedule-edit',
+        'monitors',
+        'monitor',
+        'results',
+        'result',
+        'my-exams',
+        'attempt',
+        'attempt-result',
         'forbidden',
         'not-found',
       ]),
@@ -126,5 +139,19 @@ describe('router', () => {
   it('path tidak dikenal → 404', async () => {
     await router.push('/tidak-ada')
     expect(router.currentRoute.value.name).toBe('not-found')
+  })
+})
+
+describe('router: layar ujian siswa', () => {
+  it('route pengerjaan memakai layout blank di level atas (tanpa dashboard)', () => {
+    window.scrollTo = vi.fn()
+    setActivePinia(createPinia())
+    const router = createAppRouter(createMemoryHistory())
+    const attempt = router.getRoutes().find((r) => r.name === 'attempt')
+    expect(attempt.meta).toMatchObject({ layout: 'blank', menuCode: 'my_exams' })
+    // Route berlayout dashboard punya induk komponen layout; route blank tidak.
+    const resolved = router.resolve('/my-exams/attempt/abc')
+    expect(resolved.matched).toHaveLength(1)
+    expect(router.resolve('/my-exams').matched).toHaveLength(2)
   })
 })
