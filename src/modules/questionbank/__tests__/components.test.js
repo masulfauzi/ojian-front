@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { mount } from '@vue/test-utils'
+import { createPinia } from 'pinia'
 import PrimeVue from 'primevue/config'
 import ToastService from 'primevue/toastservice'
 import Tooltip from 'primevue/tooltip'
@@ -7,7 +8,11 @@ import ChoicePreview from '../components/preview/ChoicePreview.vue'
 import SingleChoiceEditor from '../components/editors/SingleChoiceEditor.vue'
 import { typeOf } from '../types/definitions'
 
-const global = { plugins: [PrimeVue, ToastService], directives: { tooltip: Tooltip } }
+// Pinia: QuestionHtml memeriksa hak akses media lewat auth store.
+const global = {
+  plugins: [PrimeVue, ToastService, createPinia()],
+  directives: { tooltip: Tooltip },
+}
 
 const content = {
   prompt: '<p>Soal</p>',

@@ -100,6 +100,12 @@ export async function listStudents({
   return { items: items.map(toStudent), meta }
 }
 
+/** Pencarian siswa aktif untuk pilihan (mis. peserta ujian susulan), maks 20. */
+export async function listStudentOptions({ schoolId, search } = {}) {
+  const { items } = await listStudents({ schoolId, search, status: 'active', limit: 20 })
+  return items
+}
+
 export async function getStudent(id, { schoolId } = {}) {
   const res = await http.get(`/students/${id}`, { params: scoped(schoolId) })
   return toStudent(unwrap(res))

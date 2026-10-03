@@ -1,2 +1,2 @@
-// Public API modul student (belum ada yang dipakai modul lain).
-export {}
+// Public API modul student.
+export { listStudentOptions } from './api/student.api'
