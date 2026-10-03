@@ -49,6 +49,11 @@ describe('router', () => {
         'roles',
         'role-permissions',
         'menus',
+        'academic-years',
+        'classes',
+        'class-detail',
+        'promotions',
+        'students',
         'forbidden',
         'not-found',
       ]),
@@ -102,6 +107,14 @@ describe('router', () => {
     await router.push('/login')
     await router.push('/register-school')
     expect(router.currentRoute.value.name).toBe('dashboard')
+  })
+
+  it('guru (hanya lihat kelas) dapat membuka /classes tetapi /promotions → 403', async () => {
+    loginWith({ dashboard: viewOnly, classes: viewOnly, students: viewOnly })
+    await router.push('/classes')
+    expect(router.currentRoute.value.name).toBe('classes')
+    await router.push('/promotions')
+    expect(router.currentRoute.value.name).toBe('forbidden')
   })
 
   it('path tidak dikenal → 404', async () => {
