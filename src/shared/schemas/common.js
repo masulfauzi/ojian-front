@@ -1,6 +1,7 @@
 // Aturan Zod yang dipakai ulang + error map global berbahasa Indonesia.
 // Setiap file `*.schema.js` mengimpor dari sini sehingga error map selalu terpasang.
 import { z } from 'zod'
+import { isISODate } from '@/shared/utils/date'
 
 export const PASSWORD_MIN = 8
 export const PASSWORD_MAX = 72
@@ -94,5 +95,20 @@ export const optionalId = () =>
     .string()
     .nullish()
     .transform((v) => v || null)
+
+/** Tanggal wajib 'YYYY-MM-DD' (nilai dari FormDatePicker). */
+export const dateField = () =>
+  z
+    .string({ required_error: 'wajib diisi', invalid_type_error: 'wajib diisi' })
+    .min(1)
+    .refine(isISODate, { message: 'tanggal tidak valid' })
+
+/** Tanggal opsional: kosong menjadi `null`. */
+export const optionalDateField = () =>
+  z
+    .string()
+    .nullish()
+    .transform((v) => v || null)
+    .refine((v) => v === null || isISODate(v), { message: 'tanggal tidak valid' })
 
 export { z }

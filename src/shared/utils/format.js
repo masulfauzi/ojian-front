@@ -1,8 +1,11 @@
+import { fromISODate } from './date'
+
 const LOCALE = 'id-ID'
 
 function toDate(value) {
   if (value === null || value === undefined || value === '') return null
-  const date = value instanceof Date ? value : new Date(value)
+  // Tanggal saja ('YYYY-MM-DD') dibaca sebagai tanggal lokal agar tidak bergeser sehari.
+  const date = value instanceof Date ? value : (fromISODate(value) ?? new Date(value))
   return Number.isNaN(date.getTime()) ? null : date
 }
 

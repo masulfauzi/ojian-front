@@ -790,7 +790,8 @@ a {
   margin-top: 1.75rem;
 }
 
-.registration-summary {
+.registration-summary,
+.summary-list {
   display: grid;
   grid-template-columns: max-content 1fr;
   gap: 0.35rem 1rem;
@@ -801,23 +802,27 @@ a {
   border-radius: var(--app-radius);
 }
 
-.registration-summary dt {
+.registration-summary dt,
+.summary-list dt {
   color: var(--app-text-muted);
 }
 
-.registration-summary dd {
+.registration-summary dd,
+.summary-list dd {
   margin: 0;
   font-weight: 500;
 }
 
-.registration-actions {
+.registration-actions,
+.wizard-actions {
   display: flex;
   gap: 0.5rem;
   align-items: center;
   margin-top: 1.5rem;
 }
 
-.registration-actions__spacer {
+.registration-actions__spacer,
+.wizard-actions__spacer {
   flex: 1;
 }
 
@@ -833,4 +838,210 @@ a {
   .auth-card {
     padding: 1.25rem;
   }
+}
+
+/* ---------- Akademik ---------- */
+
+.school-context {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  background: var(--app-surface);
+  border: 1px solid var(--app-border);
+  border-radius: var(--app-radius);
+}
+
+.school-context__label {
+  display: inline-flex;
+  gap: 0.4rem;
+  align-items: center;
+  font-weight: 600;
+}
+
+.school-context__select {
+  flex: 1 1 18rem;
+  max-width: 32rem;
+}
+
+.form-section-title {
+  margin: 0.5rem 0 0;
+  font-size: 0.95rem;
+  color: var(--app-text-muted);
+}
+
+.year-defaults {
+  margin-top: 1.6rem;
+}
+
+.year-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.year-card__header {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.year-card__tag {
+  margin-left: 0.5rem;
+  vertical-align: middle;
+}
+
+.year-card__range {
+  margin-top: 0.2rem;
+  font-size: 0.9rem;
+  font-weight: 400;
+}
+
+.semester-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.semester-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.65rem 0.85rem;
+  border: 1px solid var(--app-border);
+  border-radius: var(--app-radius);
+}
+
+.semester-row.is-active {
+  background: var(--p-primary-50);
+  border-color: var(--p-primary-200);
+}
+
+.semester-row__info {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  align-items: center;
+}
+
+.semester-row__name {
+  font-weight: 600;
+}
+
+.semester-row__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+}
+
+/* ---------- Kelas & kenaikan kelas ---------- */
+
+.toolbar__filter--narrow {
+  flex: 0 1 8rem;
+}
+
+.link-strong {
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.link-strong:hover {
+  text-decoration: underline;
+}
+
+.promotion-header {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  align-items: center;
+}
+
+.promotion-toolbar {
+  margin-bottom: 0.5rem;
+}
+
+.promotion-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+  gap: 0.75rem;
+}
+
+.promotion-stats > div {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  padding: 0.85rem 1rem;
+  background: var(--p-surface-50);
+  border: 1px solid var(--app-border);
+  border-radius: var(--app-radius);
+}
+
+.promotion-stats strong {
+  font-size: 1.5rem;
+}
+
+.promotion-stats span {
+  color: var(--app-text-muted);
+}
+
+.promotion-result {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  align-items: center;
+  text-align: center;
+}
+
+.promotion-result__icon {
+  font-size: 2.5rem;
+  color: var(--p-primary-color);
+}
+
+.promotion-result .promotion-stats {
+  width: 100%;
+  max-width: 36rem;
+}
+
+/* ---------- Siswa ---------- */
+
+.password-value {
+  font-size: 1.05rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+
+.import-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin: 0;
+  padding-left: 1.25rem;
+}
+
+.import-steps li > div {
+  margin-top: 0.5rem;
+}
+
+.import-file {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.import-message {
+  margin-top: 0.2rem;
+  font-size: 0.85rem;
+}
+
+.student-drawer {
+  width: min(30rem, 100vw) !important;
+}
+
+.student-drawer__name {
+  margin-bottom: 0.4rem;
+  font-size: 1.25rem;
 }
