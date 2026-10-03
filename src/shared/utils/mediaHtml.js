@@ -18,17 +18,35 @@ function transformImages(html, fn) {
   return template.innerHTML
 }
 
-/** Isi src gambar ber-data-media-id dari peta { mediaId: url }. */
+export const MISSING_MEDIA_CLASS = 'media-missing'
+export const MISSING_MEDIA_ALT = 'Gambar tidak dapat dimuat'
+
+/**
+ * Isi src gambar ber-data-media-id dari peta { mediaId: url }. Gambar tanpa URL (gagal dimuat
+ * atau pengguna tidak berhak) ditandai sebagai placeholder: kelas `media-missing` + teks alt.
+ */
 export function withMediaUrls(html, urls) {
   return transformImages(html, (img) => {
     const url = urls[img.getAttribute('data-media-id')]
-    if (url) img.setAttribute('src', url)
+    if (url) {
+      img.setAttribute('src', url)
+      return
+    }
+    img.classList.add(MISSING_MEDIA_CLASS)
+    if (!img.getAttribute('alt')) img.setAttribute('alt', MISSING_MEDIA_ALT)
   })
 }
 
-/** Buang src gambar ber-data-media-id (URL bertanda tangan tidak boleh tersimpan). */
+/** Buang src dan tanda placeholder gambar ber-data-media-id (URL bertanda tangan tidak boleh tersimpan). */
 export function stripMediaSrc(html) {
-  return transformImages(html, (img) => img.removeAttribute('src'))
+  return transformImages(html, (img) => {
+    img.removeAttribute('src')
+    if (img.classList.contains(MISSING_MEDIA_CLASS)) {
+      img.classList.remove(MISSING_MEDIA_CLASS)
+      if (!img.classList.length) img.removeAttribute('class')
+      if (img.getAttribute('alt') === MISSING_MEDIA_ALT) img.removeAttribute('alt')
+    }
+  })
 }
 
 /**

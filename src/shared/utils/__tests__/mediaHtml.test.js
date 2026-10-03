@@ -27,6 +27,18 @@ describe('mediaHtml', () => {
     expect(stripMediaSrc('<img src="https://a/b.png">')).toBe('<img src="https://a/b.png">')
   })
 
+  it('gambar tanpa URL menjadi placeholder dan tandanya dibuang saat disimpan', () => {
+    const html = `<img data-media-id="${ID}">`
+    const shown = withMediaUrls(html, {})
+    expect(shown).toContain('class="media-missing"')
+    expect(shown).toContain('alt="Gambar tidak dapat dimuat"')
+    expect(stripMediaSrc(shown)).toBe(html)
+    // alt milik penulis tidak ditimpa.
+    expect(withMediaUrls(`<img data-media-id="${ID}" alt="Diagram">`, {})).toContain(
+      'alt="Diagram"',
+    )
+  })
+
   it('mapStrings dan mediaIdsInJson menelusuri struktur bersarang', () => {
     const content = {
       prompt: `<img data-media-id="${ID}">`,
