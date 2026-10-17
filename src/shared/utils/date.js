@@ -20,3 +20,35 @@ export function fromISODate(value) {
 }
 
 export const isISODate = (value) => fromISODate(value) !== null
+
+// ---- Bulan ('YYYY-MM', format API rekap) ----
+
+const MONTH_KEY = /^(\d{4})-(\d{2})$/
+
+/** Date → 'YYYY-MM' (bulan lokal). */
+export const monthKey = (date = new Date()) => `${date.getFullYear()}-${pad(date.getMonth() + 1)}`
+
+/** Geser 'YYYY-MM' sebanyak `n` bulan (negatif = mundur). */
+export function shiftMonth(key, n) {
+  const match = MONTH_KEY.exec(key ?? '')
+  if (!match) return key
+  const date = new Date(Number(match[1]), Number(match[2]) - 1 + n, 1)
+  return monthKey(date)
+}
+
+/** 'YYYY-MM' → "Oktober 2026". */
+export function monthLabel(key) {
+  const match = MONTH_KEY.exec(key ?? '')
+  if (!match) return key ?? ''
+  return new Intl.DateTimeFormat('id-ID', { month: 'long', year: 'numeric' }).format(
+    new Date(Number(match[1]), Number(match[2]) - 1, 1),
+  )
+}
+
+/** Tambah `n` hari ke 'YYYY-MM-DD'. */
+export function addDays(iso, n) {
+  const date = fromISODate(iso)
+  if (!date) return iso
+  date.setDate(date.getDate() + n)
+  return toISODate(date)
+}

@@ -2180,3 +2180,399 @@ img.media-missing {
   border-radius: 0.25rem;
   background: var(--p-surface-100);
 }
+
+/* ---------- Presensi ---------- */
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+.pre-line {
+  white-space: pre-line;
+}
+
+.clickable-rows .p-datatable-tbody > tr {
+  cursor: pointer;
+}
+
+.wrap-select {
+  flex-wrap: wrap;
+}
+
+.status-tabs {
+  flex-wrap: wrap;
+}
+
+.form-grid--3 {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+@media (width < 640px) {
+  .form-grid--3 {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.stat-card--danger .stat-card__value {
+  color: var(--p-red-500);
+}
+
+.month-switch {
+  display: inline-flex;
+  gap: 0.25rem;
+  align-items: center;
+}
+
+.attendance-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+  gap: 1.25rem;
+  align-items: start;
+}
+
+@media (width < 1000px) {
+  .attendance-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.today-card__head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.today-done {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  padding: 1rem;
+  border-radius: var(--app-radius);
+  background: var(--p-green-50);
+}
+
+.today-done__icon {
+  color: var(--p-green-600);
+  font-size: 2.5rem;
+}
+
+.today-done__time {
+  margin: 0.5rem 0 0.15rem;
+  font-size: 1.15rem;
+  font-weight: 600;
+}
+
+.today-done p {
+  margin: 0;
+}
+
+.checkin-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.checkin-panel__selfie,
+.checkin-panel__location {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.checkin-panel__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: center;
+}
+
+.checkin-panel__submit {
+  width: 100%;
+}
+
+.selfie-frame {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: min(100%, 22rem);
+  aspect-ratio: 3 / 4;
+  margin: 0 auto;
+  overflow: hidden;
+  border-radius: 1rem;
+  background: var(--p-surface-900);
+}
+
+.selfie-frame__video,
+.selfie-frame__photo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Pratinjau dicerminkan seperti cermin; foto yang dikirim tidak. */
+.selfie-frame__video {
+  transform: scaleX(-1);
+}
+
+.selfie-frame__fallback {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  color: var(--p-surface-0);
+  text-align: center;
+}
+
+.selfie-frame__fallback i {
+  font-size: 2rem;
+}
+
+.location-box {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--app-border);
+  border-radius: var(--app-radius);
+}
+
+.location-box > div {
+  flex: 1;
+}
+
+.location-box > i {
+  font-size: 1.4rem;
+  color: var(--app-text-muted);
+}
+
+.location-box.is-ok > i {
+  color: var(--p-green-600);
+}
+
+.location-box.is-error {
+  border-color: var(--p-red-300);
+}
+
+.location-box.is-error > i {
+  color: var(--p-red-500);
+}
+
+.month-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.month-summary__percent {
+  display: flex;
+  flex-direction: column;
+}
+
+.month-summary__value {
+  color: var(--p-primary-color);
+  font-size: 2rem;
+  font-weight: 800;
+  line-height: 1.1;
+}
+
+.month-summary__counts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.month-summary__counts li {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 3.5rem;
+  padding: 0.35rem 0.5rem;
+  border-radius: 0.4rem;
+  background: var(--p-surface-100);
+  font-size: 0.8rem;
+}
+
+.month-summary__count {
+  font-size: 1.15rem;
+  font-weight: 700;
+}
+
+.month-calendar.is-loading {
+  opacity: 0.6;
+}
+
+.month-calendar__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+}
+
+.month-calendar__title {
+  text-transform: capitalize;
+}
+
+.month-calendar__grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 0.3rem;
+}
+
+.month-calendar__weekday {
+  color: var(--app-text-muted);
+  font-size: 0.75rem;
+  text-align: center;
+}
+
+.month-calendar__cell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.8rem;
+  border-radius: 0.4rem;
+  background: var(--p-surface-100);
+  font-size: 0.8rem;
+}
+
+.month-calendar__cell.is-empty {
+  background: transparent;
+}
+
+.month-calendar__cell.is-off {
+  background: transparent;
+  color: var(--app-text-muted);
+  opacity: 0.6;
+}
+
+.month-calendar__mark {
+  font-weight: 700;
+}
+
+.month-calendar__cell.is-present {
+  background: var(--p-green-100);
+  color: var(--p-green-800);
+}
+
+.month-calendar__cell.is-late {
+  background: var(--p-amber-100);
+  color: var(--p-amber-800);
+}
+
+.month-calendar__cell.is-excused,
+.month-calendar__cell.is-sick {
+  background: var(--p-blue-100);
+  color: var(--p-blue-800);
+}
+
+.month-calendar__cell.is-absent {
+  background: var(--p-red-100);
+  color: var(--p-red-800);
+}
+
+.month-calendar__cell.is-none {
+  border: 1px dashed var(--app-border);
+  background: var(--app-surface);
+}
+
+.month-calendar__cell.is-today {
+  outline: 2px solid var(--p-primary-color);
+  outline-offset: 1px;
+}
+
+.leave-files__list,
+.leave-upload-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.leave-files__item {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.leave-files__name {
+  overflow: hidden;
+  max-width: 18rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.leave-files__preview {
+  flex-basis: 100%;
+  max-width: 100%;
+  max-height: 22rem;
+  border: 1px solid var(--app-border);
+  border-radius: var(--app-radius);
+  object-fit: contain;
+}
+
+.leave-upload {
+  display: flex;
+  gap: 0.6rem;
+  align-items: center;
+  padding: 0.5rem 0.6rem;
+  border: 1px solid var(--app-border);
+  border-radius: var(--app-radius);
+}
+
+.leave-upload.is-error {
+  border-color: var(--p-red-300);
+}
+
+.leave-upload__body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.leave-upload__name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.leave-upload__bar {
+  height: 0.35rem;
+  margin-top: 0.25rem;
+}
+
+.selfie-view {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.selfie-view img {
+  max-width: 100%;
+  max-height: 60vh;
+  border-radius: var(--app-radius);
+}
+
+.map-picker__map {
+  z-index: 0;
+  border: 1px solid var(--app-border);
+  border-radius: var(--app-radius);
+}
+
+.map-picker.is-disabled .map-picker__map {
+  cursor: default;
+}
