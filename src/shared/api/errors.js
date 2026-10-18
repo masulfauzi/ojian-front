@@ -80,3 +80,27 @@ export function remapFieldErrors(error, map) {
   )
   return error
 }
+
+/**
+ * Unduhan dengan `responseType: 'blob'` menerima respons error sebagai Blob, sehingga pesan
+ * dan kode dari server hilang. Fungsi ini membaca isi Blob (JSON) dan mengembalikan ApiError
+ * dengan pesan, kode, dan error field aslinya.
+ */
+export async function readBlobError(error) {
+  const data = error?.cause?.response?.data
+  if (!(error instanceof ApiError) || typeof Blob === 'undefined' || !(data instanceof Blob)) {
+    return error
+  }
+  try {
+    const body = JSON.parse(await data.text())
+    return new ApiError({
+      status: error.status,
+      message: typeof body?.message === 'string' && body.message ? body.message : error.message,
+      fieldErrors: toFieldErrors(body?.errors),
+      code: typeof body?.code === 'string' && body.code ? body.code : error.code,
+      cause: error.cause,
+    })
+  } catch {
+    return error
+  }
+}

@@ -2576,3 +2576,284 @@ img.media-missing {
 .map-picker.is-disabled .map-picker__map {
   cursor: default;
 }
+
+/* ---------- Jurnal & jadwal mengajar ---------- */
+
+.semester-switcher {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.timetable__grid {
+  display: grid;
+  gap: 0;
+  overflow-x: auto;
+  border: 1px solid var(--app-border);
+  border-radius: var(--app-radius);
+  background:
+    repeating-linear-gradient(
+      to bottom,
+      transparent 0,
+      transparent calc(3.25rem - 1px),
+      var(--app-border) calc(3.25rem - 1px),
+      var(--app-border) 3.25rem
+    );
+  background-position: 0 2.5rem;
+}
+
+.timetable__corner,
+.timetable__day {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 2.5rem;
+  border-bottom: 1px solid var(--app-border);
+  background: var(--p-surface-50);
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.timetable__day.is-today {
+  color: var(--p-primary-color);
+}
+
+.timetable__period {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-right: 1px solid var(--app-border);
+  color: var(--app-text-muted);
+  font-size: 0.8rem;
+}
+
+.timetable__column {
+  display: grid;
+  gap: 2px;
+  padding: 2px;
+  border-left: 1px solid var(--app-border);
+}
+
+.timetable__column.is-today {
+  background: color-mix(in srgb, var(--p-primary-color) 5%, transparent);
+}
+
+.timetable__slot {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  min-width: 0;
+  padding: 0.3rem 1.5rem 0.3rem 0.45rem;
+  overflow: hidden;
+  border: 0;
+  border-left: 4px solid var(--tt-accent);
+  border-radius: 0.35rem;
+  color: var(--tt-fg);
+  background: var(--tt-bg);
+  font: inherit;
+  font-size: 0.78rem;
+  text-align: left;
+}
+
+button.timetable__slot {
+  cursor: pointer;
+}
+
+button.timetable__slot:hover,
+button.timetable__slot:focus-visible {
+  filter: brightness(0.96);
+  outline: 2px solid var(--tt-accent);
+  outline-offset: 1px;
+}
+
+.timetable__slot.is-manual {
+  border-left-style: dashed;
+}
+
+.timetable__subject {
+  overflow: hidden;
+  font-size: 0.8rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.timetable__meta {
+  overflow: hidden;
+  opacity: 0.85;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.timetable__badges {
+  position: absolute;
+  top: 0.25rem;
+  right: 0.35rem;
+  display: flex;
+  gap: 0.2rem;
+  font-size: 0.7rem;
+}
+
+.timetable__list {
+  display: none;
+}
+
+.timetable-legend {
+  margin: 0.75rem 0 0;
+  font-size: 0.8rem;
+}
+
+@media (width < 760px) {
+  .timetable__grid {
+    display: none;
+  }
+
+  .timetable__list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+}
+
+.timetable__list-day h3.is-today {
+  color: var(--p-primary-color);
+}
+
+.timetable__list-item {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  width: 100%;
+  margin-top: 0.4rem;
+  padding: 0.55rem 0.75rem;
+  border: 0;
+  border-left: 4px solid var(--tt-accent);
+  border-radius: 0.4rem;
+  color: var(--tt-fg);
+  background: var(--tt-bg);
+  font: inherit;
+  text-align: left;
+}
+
+button.timetable__list-item {
+  cursor: pointer;
+}
+
+.timetable__list-period {
+  flex: 0 0 4.5rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.today-slots__list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+.today-slot {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  min-width: 10rem;
+  padding: 0.6rem 0.8rem;
+  border: 0;
+  border-left: 4px solid var(--tt-accent);
+  border-radius: 0.5rem;
+  color: var(--tt-fg);
+  background: var(--tt-bg);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.today-slot:hover,
+.today-slot:focus-visible {
+  outline: 2px solid var(--tt-accent);
+  outline-offset: 1px;
+}
+
+.today-slot.is-done {
+  opacity: 0.7;
+}
+
+.today-slot__period {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.today-slot__done {
+  font-size: 0.75rem;
+}
+
+.attendance-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.generate-teachers {
+  flex: 1 1 16rem;
+}
+
+.tt-color-emerald {
+  --tt-bg: #d1fae5;
+  --tt-fg: #065f46;
+  --tt-accent: #10b981;
+}
+
+.tt-color-sky {
+  --tt-bg: #e0f2fe;
+  --tt-fg: #075985;
+  --tt-accent: #0ea5e9;
+}
+
+.tt-color-amber {
+  --tt-bg: #fef3c7;
+  --tt-fg: #92400e;
+  --tt-accent: #f59e0b;
+}
+
+.tt-color-violet {
+  --tt-bg: #ede9fe;
+  --tt-fg: #5b21b6;
+  --tt-accent: #8b5cf6;
+}
+
+.tt-color-rose {
+  --tt-bg: #ffe4e6;
+  --tt-fg: #9f1239;
+  --tt-accent: #f43f5e;
+}
+
+.tt-color-teal {
+  --tt-bg: #ccfbf1;
+  --tt-fg: #115e59;
+  --tt-accent: #14b8a6;
+}
+
+.tt-color-orange {
+  --tt-bg: #ffedd5;
+  --tt-fg: #9a3412;
+  --tt-accent: #f97316;
+}
+
+.tt-color-indigo {
+  --tt-bg: #e0e7ff;
+  --tt-fg: #3730a3;
+  --tt-accent: #6366f1;
+}
+
+.tt-color-lime {
+  --tt-bg: #ecfccb;
+  --tt-fg: #3f6212;
+  --tt-accent: #84cc16;
+}
+
+.tt-color-pink {
+  --tt-bg: #fce7f3;
+  --tt-fg: #9d174d;
+  --tt-accent: #ec4899;
+}

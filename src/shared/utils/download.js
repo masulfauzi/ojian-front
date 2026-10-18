@@ -36,3 +36,21 @@ export function toCsv(rows, columns) {
 export function downloadCsv(rows, columns, filename) {
   downloadBlob(new Blob([toCsv(rows, columns)], { type: 'text/csv;charset=utf-8' }), filename)
 }
+
+/**
+ * Nama berkas dari header Content-Disposition; `filename*=UTF-8''…` (RFC 5987) diutamakan.
+ * Header kosong/tidak dikenali → `fallback`.
+ */
+export function filenameFromDisposition(header, fallback = 'unduhan') {
+  if (!header) return fallback
+  const star = /filename\*\s*=\s*([^']*)''([^;]+)/i.exec(header)
+  if (star) {
+    try {
+      return decodeURIComponent(star[2].trim().replace(/^"|"$/g, ''))
+    } catch {
+      // Lanjut ke filename biasa.
+    }
+  }
+  const plain = /filename\s*=\s*"?([^";]+)"?/i.exec(header)
+  return plain ? plain[1].trim() : fallback
+}
