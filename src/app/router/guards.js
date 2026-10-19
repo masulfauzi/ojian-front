@@ -1,6 +1,6 @@
 import { useAuthStore } from '@/modules/auth'
 
-const APP_NAME = import.meta.env.VITE_APP_NAME || 'Exam Web'
+const APP_NAME = import.meta.env.VITE_APP_NAME || 'Mulang.id'
 let defaultDescription = null
 
 /** Rute publik murni (mis. landing): tampil tanpa menunggu pemulihan sesi. */

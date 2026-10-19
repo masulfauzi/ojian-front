@@ -12,7 +12,7 @@ import { useMenu } from '../menu'
 import { canAccessRoute } from '../router/guards'
 import SidebarNav from './SidebarNav.vue'
 
-const appName = import.meta.env.VITE_APP_NAME || 'Exam Web'
+const appName = import.meta.env.VITE_APP_NAME || 'Mulang.id'
 const auth = useAuthStore()
 const route = useRoute()
 const router = useRouter()

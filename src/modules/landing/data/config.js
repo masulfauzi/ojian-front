@@ -2,7 +2,7 @@
 
 const env = import.meta.env
 
-export const appName = () => env.VITE_APP_NAME || 'Exam Web'
+export const appName = () => env.VITE_APP_NAME || 'Mulang.id'
 export const orgName = () => env.VITE_ORG_NAME || appName()
 export const siteUrl = () => env.VITE_SITE_URL || ''
 

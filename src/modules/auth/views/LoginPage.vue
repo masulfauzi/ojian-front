@@ -3,7 +3,7 @@ import { useRoute, useRouter } from 'vue-router'
 import LoginForm from '../components/LoginForm.vue'
 import { useAuthStore } from '../stores/auth.store'
 
-const appName = import.meta.env.VITE_APP_NAME || 'Exam Web'
+const appName = import.meta.env.VITE_APP_NAME || 'Mulang.id'
 const auth = useAuthStore()
 const route = useRoute()
 const router = useRouter()
