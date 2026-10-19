@@ -1,0 +1,27 @@
+# Hanya landing, login, dan registrasi sekolah yang publik. Halaman aplikasi memerlukan login.
+User-agent: *
+Allow: /$
+Allow: /login
+Allow: /register-school
+Disallow: /dashboard
+Disallow: /profile
+Disallow: /change-password
+Disallow: /my-
+Disallow: /attendance
+Disallow: /holidays
+Disallow: /exam
+Disallow: /exams
+Disallow: /question-bank
+Disallow: /journal
+Disallow: /journals
+Disallow: /schedules
+Disallow: /users
+Disallow: /roles
+Disallow: /menus
+Disallow: /schools
+Disallow: /students
+Disallow: /classes
+Disallow: /promotions
+Disallow: /academic-years
+Disallow: /subjects
+Disallow: /dev/
