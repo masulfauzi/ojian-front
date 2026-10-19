@@ -1,0 +1,737 @@
+/*
+ * Gaya landing page. HANYA token tema PrimeVue (--p-*) dan variabel aplikasi (--app-*), tanpa
+ * warna tertulis langsung; variasi warna lewat color-mix. Dimuat bersama chunk landing.
+ */
+
+.landing {
+  --landing-max: 1200px;
+  --landing-gutter: 1.5rem;
+  --landing-header-h: 4rem;
+  --landing-tint: color-mix(in srgb, var(--p-primary-color) 10%, var(--p-surface-0));
+  --landing-shadow: 0 12px 32px color-mix(in srgb, var(--p-surface-900) 8%, transparent);
+  min-height: 100vh;
+  color: var(--p-text-color);
+  background: var(--p-surface-0);
+}
+
+.landing-main:focus {
+  outline: none;
+}
+
+.landing-container {
+  width: 100%;
+  max-width: var(--landing-max);
+  margin: 0 auto;
+  padding: 0 var(--landing-gutter);
+}
+
+.landing-container--narrow {
+  max-width: 52rem;
+}
+
+/* Fokus selalu terlihat (aksesibilitas). */
+.landing a:focus-visible,
+.landing button:focus-visible,
+.landing [tabindex='-1']:focus-visible {
+  outline: 2px solid var(--p-primary-color);
+  outline-offset: 3px;
+  border-radius: 0.25rem;
+}
+
+.landing h2[tabindex='-1']:focus,
+.landing h3[tabindex='-1']:focus {
+  outline: none;
+}
+
+/* ---------- Header ---------- */
+
+.landing-header {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  border-bottom: 1px solid var(--app-border);
+  background: color-mix(in srgb, var(--p-surface-0) 92%, transparent);
+  backdrop-filter: blur(8px);
+}
+
+.landing-header__inner {
+  display: flex;
+  gap: 1.5rem;
+  align-items: center;
+  height: var(--landing-header-h);
+}
+
+.landing-brand {
+  display: inline-flex;
+  gap: 0.6rem;
+  align-items: center;
+  color: var(--p-primary-color);
+  font-size: 1.1rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.landing-brand--muted {
+  color: var(--p-text-color);
+}
+
+.landing-nav {
+  display: flex;
+  flex: 1;
+  gap: 0.25rem;
+  justify-content: center;
+}
+
+.landing-nav__link {
+  padding: 0.45rem 0.75rem;
+  border-radius: var(--app-radius);
+  color: var(--p-text-muted-color);
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.landing-nav__link:hover,
+.landing-nav__link.is-active {
+  color: var(--p-primary-color);
+  background: var(--landing-tint);
+}
+
+.landing-header__actions {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  margin-left: auto;
+}
+
+.landing-header .landing-header__menu.p-button {
+  display: none;
+}
+
+/* Tombol PrimeVue yang dirender sebagai tautan tidak bergaris bawah. */
+.landing a.p-button,
+.landing-layout a.p-button {
+  text-decoration: none;
+}
+
+.landing-drawer-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.landing-drawer-nav__link {
+  padding: 0.75rem 0.5rem;
+  border-radius: var(--app-radius);
+  color: var(--p-text-color);
+  font-size: 1.05rem;
+  text-decoration: none;
+}
+
+.landing-drawer-nav__link:hover {
+  background: var(--landing-tint);
+}
+
+/* ---------- Hero ---------- */
+
+.landing-hero {
+  padding: 4rem 0 3rem;
+  background: linear-gradient(160deg, var(--p-primary-50), var(--p-surface-0) 65%);
+}
+
+.landing-hero__inner {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+  gap: 3rem;
+  align-items: center;
+}
+
+.landing-eyebrow {
+  display: inline-block;
+  margin-bottom: 0.75rem;
+  padding: 0.25rem 0.7rem;
+  border-radius: 999px;
+  color: var(--p-primary-700);
+  background: var(--landing-tint);
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.landing-hero__title {
+  font-size: clamp(2rem, 4vw, 3rem);
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+}
+
+.landing-hero__lead {
+  max-width: 38rem;
+  margin: 1.25rem 0 2rem;
+  color: var(--p-text-muted-color);
+  font-size: 1.15rem;
+  line-height: 1.6;
+}
+
+.landing-hero__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+/* Ilustrasi hero dari token tema. */
+.hero-mockup {
+  position: relative;
+  display: grid;
+  gap: 1rem;
+  min-height: 22rem;
+}
+
+.mock-card {
+  padding: 1rem 1.1rem;
+  border: 1px solid var(--app-border);
+  border-radius: var(--app-radius);
+  background: var(--p-surface-0);
+  box-shadow: var(--landing-shadow);
+}
+
+.mock-title {
+  font-weight: 600;
+}
+
+.mock-exam__bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.6rem;
+}
+
+.mock-timer {
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  background: var(--p-surface-100);
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+}
+
+.mock-question {
+  margin: 0 0 0.6rem;
+  color: var(--p-text-muted-color);
+}
+
+.mock-options {
+  display: grid;
+  gap: 0.4rem;
+  margin: 0 0 0.75rem;
+  padding: 0;
+  list-style: none;
+}
+
+.mock-options li {
+  padding: 0.45rem 0.7rem;
+  border: 1px solid var(--app-border);
+  border-radius: 0.4rem;
+}
+
+.mock-options li.is-selected {
+  border-color: var(--p-primary-color);
+  background: var(--landing-tint);
+  font-weight: 600;
+}
+
+.mock-nav {
+  display: grid;
+  grid-template-columns: repeat(10, minmax(0, 1fr));
+  gap: 0.3rem;
+}
+
+.mock-nav span {
+  padding: 0.2rem 0;
+  border: 1px solid var(--app-border);
+  border-radius: 0.3rem;
+  font-size: 0.75rem;
+  text-align: center;
+}
+
+.mock-nav span.is-done {
+  border-color: var(--p-primary-color);
+  color: var(--p-primary-contrast-color);
+  background: var(--p-primary-color);
+}
+
+.mock-nav span.is-current {
+  outline: 2px solid var(--p-primary-300);
+}
+
+.mock-attendance {
+  display: flex;
+  gap: 0.8rem;
+  align-items: center;
+  width: 70%;
+  margin-left: auto;
+}
+
+.mock-attendance > i {
+  color: var(--p-primary-color);
+  font-size: 1.8rem;
+}
+
+.mock-attendance > div {
+  display: flex;
+  flex-direction: column;
+}
+
+.mock-badge {
+  color: var(--p-primary-700);
+  font-weight: 600;
+}
+
+.mock-journal {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  width: 82%;
+}
+
+.mock-journal .mock-title i {
+  color: var(--p-primary-color);
+}
+
+.mock-line.is-muted {
+  color: var(--p-text-muted-color);
+}
+
+/* ---------- Bagian ---------- */
+
+.landing-section {
+  padding: 4.5rem 0;
+  scroll-margin-top: var(--landing-header-h);
+}
+
+.landing-section--tight {
+  padding: 2rem 0 1rem;
+}
+
+.landing-section--alt {
+  background: var(--p-surface-50);
+}
+
+.landing-heading {
+  max-width: 44rem;
+  margin: 0 auto 2.5rem;
+  text-align: center;
+}
+
+.landing-heading__title {
+  font-size: clamp(1.6rem, 3vw, 2.1rem);
+  letter-spacing: -0.01em;
+}
+
+.landing-heading__lead {
+  margin: 0.75rem 0 0;
+  color: var(--p-text-muted-color);
+  font-size: 1.05rem;
+  line-height: 1.6;
+}
+
+/* Ringkasan pilar */
+.pillar-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.pillar-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  height: 100%;
+  padding: 1.25rem;
+  border: 1px solid var(--app-border);
+  border-radius: var(--app-radius);
+  color: var(--p-text-color);
+  background: var(--p-surface-0);
+  text-decoration: none;
+  transition:
+    border-color 0.15s,
+    transform 0.15s;
+}
+
+.pillar-card:hover {
+  border-color: var(--p-primary-color);
+  transform: translateY(-2px);
+}
+
+.pillar-card__icon {
+  color: var(--p-primary-color);
+  font-size: 1.5rem;
+}
+
+.pillar-card__title {
+  font-weight: 700;
+}
+
+.pillar-card__tagline {
+  color: var(--p-text-muted-color);
+}
+
+/* Grup fitur */
+.feature-groups {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.25rem;
+}
+
+.feature-group {
+  padding: 1.5rem;
+  border: 1px solid var(--app-border);
+  border-radius: var(--app-radius);
+  background: var(--p-surface-0);
+  scroll-margin-top: calc(var(--landing-header-h) + 1rem);
+}
+
+.feature-group__header {
+  display: flex;
+  gap: 0.9rem;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+}
+
+.feature-group__icon {
+  display: grid;
+  flex: 0 0 auto;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: var(--app-radius);
+  color: var(--p-primary-color);
+  background: var(--landing-tint);
+  font-size: 1.25rem;
+}
+
+.feature-group__title {
+  font-size: 1.25rem;
+}
+
+.feature-group__tagline {
+  margin: 0.2rem 0 0;
+  color: var(--p-text-muted-color);
+}
+
+.feature-list {
+  display: grid;
+  gap: 0.85rem;
+}
+
+.feature-item__head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.feature-item__check {
+  color: var(--p-primary-color);
+  font-size: 0.85rem;
+}
+
+.feature-item__title {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.feature-item__summary {
+  margin: 0.2rem 0 0 1.35rem;
+  color: var(--p-text-muted-color);
+  line-height: 1.55;
+}
+
+/* Jenis soal */
+.qtype-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+  gap: 1rem;
+}
+
+.qtype-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  align-items: flex-start;
+  padding: 1.25rem;
+  border: 1px solid var(--app-border);
+  border-radius: var(--app-radius);
+  background: var(--p-surface-0);
+}
+
+.qtype-card.is-soon {
+  border-style: dashed;
+  background: var(--p-surface-50);
+}
+
+.qtype-card__icon {
+  display: grid;
+  place-items: center;
+  width: 2.4rem;
+  height: 2.4rem;
+  border-radius: 0.5rem;
+  color: var(--p-primary-color);
+  background: var(--landing-tint);
+}
+
+.qtype-card__title {
+  font-size: 1.05rem;
+}
+
+.qtype-card__summary {
+  flex: 1;
+  margin: 0;
+  color: var(--p-text-muted-color);
+  line-height: 1.5;
+}
+
+.landing-soon {
+  white-space: nowrap;
+}
+
+/* Alur & peran */
+.landing-tabs {
+  max-width: 52rem;
+  margin: 0 auto;
+}
+
+.landing-tabs .p-tablist-tab-list {
+  justify-content: center;
+}
+
+.landing-tabs .p-tabpanels {
+  background: transparent;
+}
+
+.landing-timeline .p-timeline-event-opposite {
+  display: none;
+}
+
+.landing-timeline__marker {
+  display: grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  color: var(--p-primary-contrast-color);
+  background: var(--p-primary-color);
+  font-weight: 700;
+}
+
+.landing-timeline__content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  padding-bottom: 1.25rem;
+}
+
+.landing-timeline__content span {
+  color: var(--p-text-muted-color);
+}
+
+.role-abilities {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.role-abilities li {
+  display: flex;
+  gap: 0.6rem;
+  align-items: flex-start;
+  padding: 0.85rem 1rem;
+  border: 1px solid var(--app-border);
+  border-radius: var(--app-radius);
+  background: var(--p-surface-0);
+}
+
+.role-abilities i {
+  margin-top: 0.2rem;
+  color: var(--p-primary-color);
+}
+
+/* Isi yang dimuat terpisah: tinggi dipesan agar tata letak tidak bergeser. */
+.landing-lazy--workflow {
+  min-height: 30rem;
+}
+
+.landing-lazy--roles {
+  min-height: 16rem;
+}
+
+.landing-lazy--faq {
+  min-height: 34rem;
+}
+
+/* Keamanan */
+.trust-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.trust-item {
+  display: flex;
+  gap: 0.9rem;
+  padding: 1.25rem;
+  border: 1px solid var(--app-border);
+  border-radius: var(--app-radius);
+}
+
+.trust-item__icon {
+  color: var(--p-primary-color);
+  font-size: 1.35rem;
+}
+
+.trust-item__title {
+  font-size: 1rem;
+}
+
+.trust-item__summary {
+  margin: 0.3rem 0 0;
+  color: var(--p-text-muted-color);
+  line-height: 1.5;
+}
+
+/* FAQ */
+.landing-faq__answer {
+  margin: 0;
+  color: var(--p-text-muted-color);
+  line-height: 1.6;
+}
+
+/* Kontak */
+.landing-contact__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  justify-content: center;
+}
+
+/* CTA penutup */
+.landing-cta {
+  background: linear-gradient(135deg, var(--p-primary-50), var(--p-surface-100));
+}
+
+.landing-cta__inner {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  align-items: center;
+  text-align: center;
+}
+
+.landing-cta__title {
+  font-size: clamp(1.6rem, 3vw, 2.1rem);
+}
+
+.landing-cta__lead,
+.landing-cta__register {
+  margin: 0;
+  color: var(--p-text-muted-color);
+}
+
+/* Footer */
+.landing-footer {
+  padding: 2rem 0;
+  border-top: 1px solid var(--app-border);
+}
+
+.landing-footer__inner {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.landing-footer__copy {
+  color: var(--p-text-muted-color);
+}
+
+/* ---------- Animasi muncul ---------- */
+
+.reveal-pending {
+  opacity: 0;
+  transform: translateY(12px);
+}
+
+.reveal-in {
+  opacity: 1;
+  transform: none;
+  transition:
+    opacity 0.5s ease,
+    transform 0.5s ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal-pending {
+    opacity: 1;
+    transform: none;
+  }
+
+  .pillar-card,
+  .reveal-in {
+    transition: none;
+  }
+}
+
+/* ---------- Responsif (titik henti aplikasi: 992 / 640 px) ---------- */
+
+@media (width < 992px) {
+  .landing-nav {
+    display: none;
+  }
+
+  .landing-header .landing-header__menu.p-button {
+    display: inline-flex;
+  }
+
+  .landing-hero__inner {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .hero-mockup {
+    min-height: 0;
+  }
+
+  .pillar-grid,
+  .trust-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .feature-groups {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (width < 640px) {
+  .landing {
+    --landing-gutter: 1rem;
+  }
+
+  .landing-hero {
+    padding: 2.5rem 0 2rem;
+  }
+
+  .landing-section {
+    padding: 3rem 0;
+  }
+
+  .pillar-grid,
+  .trust-grid,
+  .role-abilities {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .mock-attendance,
+  .mock-journal {
+    width: 100%;
+  }
+
+  .landing-header .p-button-label {
+    white-space: nowrap;
+  }
+}
