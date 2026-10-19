@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { installGuards } from './guards'
+import { scrollBehavior } from './scroll'
 
 // Kumpulkan route dari semua modul: src/modules/<nama>/routes.js (export default array).
 // Menambah modul baru TIDAK perlu mengubah file ini.
@@ -7,7 +8,10 @@ const moduleRoutes = Object.values(
   import.meta.glob('../../modules/*/routes.js', { eager: true, import: 'default' }),
 ).flat()
 
+// Urutan penting: layout `landing` (route `/`) didaftarkan lebih dulu agar `/` tidak cocok ke
+// induk layout lain yang juga ber-path '/'.
 const LAYOUTS = {
+  landing: () => import('../layouts/LandingLayout.vue'),
   dashboard: () => import('../layouts/DashboardLayout.vue'),
   auth: () => import('../layouts/AuthLayout.vue'),
 }
@@ -28,22 +32,24 @@ export function buildRoutes(routes) {
     else topLevel.push(route)
   }
 
-  return [
-    // Harus paling awal: route layout di bawah juga ber-path '/', yang pertama didaftarkan menang.
-    { path: '/', redirect: { name: 'dashboard' } },
-    ...topLevel,
-    ...Object.entries(byLayout)
-      .filter(([, children]) => children.length)
-      .map(([name, children]) => ({ path: '/', component: LAYOUTS[name], children })),
-    ...catchAll,
-  ]
+  const layoutRoute = (name) => ({ path: '/', component: LAYOUTS[name], children: byLayout[name] })
+  const others = Object.keys(LAYOUTS)
+    .filter((name) => name !== 'landing' && byLayout[name].length)
+    .map(layoutRoute)
+  // Harus paling awal: route layout lain juga ber-path '/', yang pertama didaftarkan menang.
+  // Tanpa modul landing, `/` diarahkan ke dashboard seperti sebelumnya.
+  const root = byLayout.landing.length
+    ? [layoutRoute('landing')]
+    : [{ path: '/', redirect: { name: 'dashboard' } }]
+
+  return [...root, ...topLevel, ...others, ...catchAll]
 }
 
 export function createAppRouter(history = createWebHistory(import.meta.env.BASE_URL)) {
   const router = createRouter({
     history,
     routes: buildRoutes(moduleRoutes),
-    scrollBehavior: (_to, _from, saved) => saved ?? { top: 0 },
+    scrollBehavior,
   })
   installGuards(router)
   return router

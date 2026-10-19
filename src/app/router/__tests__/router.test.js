@@ -39,6 +39,7 @@ describe('router', () => {
     const names = router.getRoutes().map((r) => r.name)
     expect(names).toEqual(
       expect.arrayContaining([
+        'landing',
         'login',
         'register-school',
         'change-password',
@@ -146,6 +147,52 @@ describe('router', () => {
     expect(router.currentRoute.value.name).toBe('classes')
     await router.push('/promotions')
     expect(router.currentRoute.value.name).toBe('forbidden')
+  })
+
+  it('/ menampilkan landing untuk tamu dan pengguna login (tidak dialihkan)', async () => {
+    await router.push('/')
+    expect(router.currentRoute.value.name).toBe('landing')
+    expect(router.resolve('/').matched.at(-1).name).toBe('landing')
+
+    loginWith({ dashboard: viewOnly })
+    await router.push('/login')
+    await router.push('/')
+    expect(router.currentRoute.value.name).toBe('landing')
+  })
+
+  it('rute publik tidak menunggu pemulihan sesi; rute berlogin tetap menunggu', async () => {
+    const auth = useAuthStore()
+    let release
+    const slow = new Promise((resolve) => (release = resolve))
+    const loadSession = vi.spyOn(auth, 'loadSession').mockImplementation(() => slow)
+
+    await router.push('/')
+    expect(router.currentRoute.value.name).toBe('landing')
+    expect(loadSession).toHaveBeenCalled()
+
+    let done = false
+    const pending = router.push('/dashboard').then(() => (done = true))
+    await Promise.resolve()
+    await Promise.resolve()
+    expect(done).toBe(false)
+    auth.initialized = true
+    release()
+    await pending
+    expect(router.currentRoute.value.name).toBe('login')
+    expect(router.currentRoute.value.query.redirect).toBe('/dashboard')
+  })
+
+  it('judul dan meta description mengikuti meta rute', async () => {
+    document.head.innerHTML = '<meta name="description" content="bawaan">'
+    await router.push('/')
+    expect(document.title).toMatch(/^Ujian online, presensi, dan jurnal mengajar · /)
+    expect(document.querySelector('meta[name="description"]').getAttribute('content')).toMatch(
+      /^Platform sekolah terpadu/,
+    )
+    await router.push('/login')
+    expect(document.querySelector('meta[name="description"]').getAttribute('content')).toBe(
+      'bawaan',
+    )
   })
 
   it('path tidak dikenal → 404', async () => {

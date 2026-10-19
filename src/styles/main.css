@@ -2857,3 +2857,22 @@ button.timetable__list-item {
   --tt-fg: #9d174d;
   --tt-accent: #ec4899;
 }
+
+/* ---------- Layout landing ---------- */
+
+.skip-link {
+  position: absolute;
+  top: -10rem;
+  left: 1rem;
+  z-index: 100;
+  padding: 0.6rem 1rem;
+  border-radius: var(--app-radius);
+  color: var(--p-primary-contrast-color);
+  background: var(--p-primary-color);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.skip-link:focus {
+  top: 1rem;
+}
